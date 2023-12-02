@@ -66,6 +66,8 @@ public class HomeController : BaseController
 
     private readonly IApplicationConfigRepository applicationConfigRepository;
 
+    private readonly IManageLicenseRepository manageLicenseRepository;
+
     private readonly IEmailTemplateRepository emailTemplateRepository;
 
     private readonly IPlanEventsMappingRepository planEventsMappingRepository;
@@ -120,7 +122,7 @@ public class HomeController : BaseController
     /// <param name="cloudConfigs">The cloud configs.</param>
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="emailService">The email service.</param>
-    public HomeController(SaaSClientLogger<HomeController> logger, IFulfillmentApiService apiService, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ILoggerFactory loggerFactory, IEmailService emailService,IWebNotificationService webNotificationService)
+    public HomeController(SaaSClientLogger<HomeController> logger, IFulfillmentApiService apiService, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ILoggerFactory loggerFactory, IEmailService emailService,IWebNotificationService webNotificationService, IManageLicenseRepository manageLicenseRepository)
     {
         this.apiService = apiService;
         this.subscriptionRepository = subscriptionRepo;
@@ -182,6 +184,7 @@ public class HomeController : BaseController
             planRepository,
             userRepository,
             this.loggerFactory.CreateLogger<UnsubscribeStatusHandler>());
+        this.manageLicenseRepository = manageLicenseRepository;
     }
 
     /// <summary>
@@ -302,6 +305,7 @@ public class HomeController : BaseController
         this.logger.Info("Home Controller / Subscriptions ");
         try
         {
+            TempData["isAdminPermisionError"] = false;
             if (this.User.Identity.IsAuthenticated)
             {
                 this.TempData["ShowWelcomeScreen"] = "True";
@@ -322,7 +326,10 @@ public class HomeController : BaseController
                     subscriptionDetail.IsSuccess = false;
                     subscriptionDetail.ErrorMessage = Convert.ToString(this.TempData["ErrorMsg"]);
                 }
-
+                if (TempData["isNotAdmin"] != null)
+                {
+                    TempData["isAdminPermisionError"] = true;
+                }
                 return this.View(subscriptionDetail);
             }
             else
@@ -577,6 +584,22 @@ public class HomeController : BaseController
                                             CreateDate = DateTime.Now,
                                         };
                                         this.subscriptionLogRepository.Save(auditLog);
+
+                                        ManageLicenses manageLicense = new ManageLicenses()
+                                        {
+                                            UserId = currentUserId.ToString(),
+                                            EmailAddress = CurrentUserEmailAddress,
+                                            FullName = CurrentUserName,
+                                            SubscriptionId = subscriptionId.ToString(),
+                                            PlanId = planId.ToString(),
+                                            OfferId = subscriptionResultExtension.OfferId,
+                                            TenantId = subscriptionResultExtension.Purchaser.TenantId.ToString(),
+                                            Role = "Admin",
+                                            AddedDate = DateTime.Now,
+
+                                        };
+
+                                        this.manageLicenseRepository.Save(manageLicense);
                                     }
                                 }
 
@@ -827,6 +850,94 @@ public class HomeController : BaseController
             this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}   ");
             return this.View("Error", ex);
         }
+    }
+
+    /// <summary>
+    /// Views the subscription.
+    /// </summary>
+    /// <param name="subscriptionId">The subscription identifier.</param>
+    /// <param name="planId">The plan identifier.</param>
+    /// <param name="operation">The operation.</param>
+    /// <returns> Subscriptions View. </returns>
+    public IActionResult ManageSubscription(Guid subscriptionId, string planId)
+    {
+        try
+        {
+            SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
+            IEnumerable<ManageLicenses> ManagedLicensedUsers = new List<ManageLicenses>();
+
+
+            if (this.User.Identity.IsAuthenticated)
+            {
+                var userId = this.userService.AddUser(this.GetCurrentUserDetail());
+                var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+                this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
+                var planDetails = this.planRepository.GetById(planId);
+                this.TempData["ShowWelcomeScreen"] = false;
+                subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                subscriptionDetail.ShowWelcomeScreen = false;
+                subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
+                subscriptionDetail.CustomerName = this.CurrentUserName;
+                subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
+                subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
+
+                ManagedLicensedUsers = manageLicenseRepository.GetAllLicensedUsers(subscriptionId.ToString()).ToList();
+            }
+
+            var isAdmin = ManagedLicensedUsers.Where(x=>x.Role == "Admin" && x.EmailAddress.ToLower() == this.CurrentUserEmailAddress.ToLower()).Count();
+            if (isAdmin == 0)
+            {
+                TempData["isNotAdmin"] = true;
+                return RedirectToAction("Subscriptions");
+            }
+            else
+            {
+
+                ViewBag.ManagedLicensedUsers = subscriptionDetail;
+                return View(ManagedLicensedUsers);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}   ");
+            return this.View("Error", ex);
+        }
+    }
+
+
+    public JsonResult SaveAllLicensedUsers([FromBody] IEnumerable<ManageLicenses> ManageLicenses)
+    {
+      
+        this.logger.Info("ManageLicenses Controller / SaveAllLicensedUsers");
+        try
+        {
+            var subId = ManageLicenses.FirstOrDefault().SubscriptionId;
+            return Json(this.manageLicenseRepository.SaveAllManageLicenses(ManageLicenses, subId));
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
+            return Json(string.Empty);
+        }
+
+    }
+
+    public JsonResult RemoveAllLicensedUsers([FromBody] IEnumerable<ManageLicenses> ManageLicenses)
+    {
+
+        this.logger.Info("ManageLicenses Controller / RemoveAllLicensedUsers");
+        try
+        {
+            var subId = ManageLicenses.FirstOrDefault().SubscriptionId;
+            return Json(this.manageLicenseRepository.RemoveAllManageLicenses(ManageLicenses, subId));
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
+            return Json(string.Empty);
+        }
+
     }
 
 

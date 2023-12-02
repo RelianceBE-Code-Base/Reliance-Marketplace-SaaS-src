@@ -50,13 +50,13 @@
                                             @item.SchedulerName
                                         </td>
                                         <td class="text-left">
-                                            @item.SubscriptionName
+                                            @item.SubscriptionName.Replace("_", " ").Replace("-", " ")
                                         </td>
                                         <td class="text-left">
                                             @item.PurchaserEmail
                                         </td>
                                         <td class="text-left">
-                                            @item.PlanId
+                                            @item.PlanId.Replace("_", " ").Replace("-", " ")
                                         </td>
                                         <td class="text-left">
                                             @item.Dimension
@@ -80,8 +80,8 @@
                                             <div class="nav-item dropdown">
                                                 <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
                                                 <div class="dropdown-menu" aria-labelledby="dropdown01">
-                                                    <a  class="dropdown-item cm-dropdown-option" href="Scheduler/DeleteSchedulerItem/@item.Id" onclick="return confirm('Are you sure?');" >Delete</a>
-                                                    <a  class="dropdown-item cm-dropdown-option" href="Scheduler/SchedulerLogDetail/@item.Id">History</a>
+                                                    <a  class="dropdown-item cm-dropdown-option loadProp" href="Scheduler/DeleteSchedulerItem/@item.Id" onclick="return confirm('Are you sure?');" >Delete</a>
+                                                    <a  class="dropdown-item cm-dropdown-option loadProp" href="Scheduler/SchedulerLogDetail/@item.Id">History</a>
                                                 </div>
                                             </div>
                                         </td>

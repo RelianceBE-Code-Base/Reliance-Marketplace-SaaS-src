@@ -19,7 +19,7 @@
     </div>
     <div class="pagequicklink text-capitalize"><h3>Quicklinks</h3></div>
     <ul id="homepage-programs">
-        <li id="onedash-menu-homepage1">
+        <li id="onedash-menu-homepage1" class="load">
             <a class="programCardLink text-capitalize" asp-area="" asp-controller="Home" asp-action="Subscriptions">Subscriptions</a>
             <div class="programCard">
                 <div class="programCardContentWrapper">
@@ -50,7 +50,7 @@
                 </div>
             </div>
         </li>
-        <li id="onedash-menu-homepage2">
+        <li id="onedash-menu-homepage2" class="load">
             <a class="programCardLink text-capitalize" asp-area="" asp-controller="Plans" asp-action="Index">Plans</a>
             <div class="programCard">
                 <div class="programCardContentWrapper">
@@ -79,7 +79,7 @@
                 </div>
             </div>
         </li>
-        <li id="onedash-menu-homepage3">
+        <li id="onedash-menu-homepage3" class="load">
             <a class="programCardLink text-capitalize" asp-area="" asp-controller="Offers" asp-action="Index">Offers</a>
             <div class="programCard">
                 <div class="programCardContentWrapper">
@@ -111,7 +111,7 @@
         </li>
         @if (this.TempData["SupportMeteredBilling"]!=null)
         {
-            <li id="onedash-menu-homepage5">
+            <li id="onedash-menu-homepage5" class="load">
                 <a class="programCardLink text-capitalize" asp-area="" asp-controller="Scheduler" asp-action="Index">Scheduler</a>
             <div class="programCard">
                 <div class="programCardContentWrapper">
@@ -138,7 +138,7 @@
             </div>
         </li>
         }
-        <li id="onedash-menu-homepage4">
+        <li id="onedash-menu-homepage4" class="load">
             <a class="programCardLink text-capitalize" asp-area="" asp-controller="KnownUsers" asp-action="Index">Test Test Users</a>
             <div class="programCard">
                 <div class="programCardContentWrapper">

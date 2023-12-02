@@ -20,6 +20,7 @@ public partial class SaasKitContext : DbContext
     public virtual DbSet<EmailTemplate> EmailTemplate { get; set; }
     public virtual DbSet<Events> Events { get; set; }
     public virtual DbSet<KnownUsers> KnownUsers { get; set; }
+    public virtual DbSet<ManageLicenses> ManageLicenses { get; set; }
     public virtual DbSet<MeteredAuditLogs> MeteredAuditLogs { get; set; }
     public virtual DbSet<MeteredDimensions> MeteredDimensions { get; set; }
     public virtual DbSet<OfferAttributes> OfferAttributes { get; set; }
@@ -144,6 +145,25 @@ public partial class SaasKitContext : DbContext
                 .HasForeignKey(d => d.RoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__KnownUser__RoleI__619B8048");
+
+            entity.Property(i => i.Id)
+                .ValueGeneratedOnAdd();
+        });
+
+        modelBuilder.Entity<ManageLicenses>(entity =>
+        {
+            entity.Property(e => e.EmailAddress)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            entity.Property(d => d.AddedDate).HasColumnType("datetime");
+            entity.Property(d => d.SubscriptionId);
+            entity.Property(d => d.OfferId);
+            entity.Property(d => d.PlanId);
+            entity.Property(d => d.TenantId);
+            entity.Property(d => d.FullName);
+            entity.Property(d => d.UserId);
+            entity.Property(d => d.Role);
 
             entity.Property(i => i.Id)
                 .ValueGeneratedOnAdd();

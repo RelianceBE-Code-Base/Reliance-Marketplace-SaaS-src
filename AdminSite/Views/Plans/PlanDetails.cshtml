@@ -31,9 +31,9 @@
         <div class="card-header">
             <dl class="row">
                 <dt class="col-2 text-right"><span>Offer Name</span></dt>
-                <dd class="col-3 text-left">@Model.OfferName</dd>
+                <dd class="col-3 text-left">@Model.OfferName.Replace("_", " ").Replace("-", " ")</dd>
                 <dt class="col-3 text-right"><span>Plan name</span></dt>
-                <dd class="col-4 text-left">@Model.DisplayName</dd>
+                <dd class="col-4 text-left">@Model.DisplayName.Replace("_", " ").Replace("-", " ")</dd>
             </dl>
         </div>
 
@@ -89,7 +89,7 @@
                             }
                             <div style="text-align:right;">
                                 <p>
-                                    <input class="cm-button-default mt0" type="button" style="background-color:#333" onclick="savePlanParameters()" value="Save Parameters" />
+                                    <input class="cm-button-default mt0 loadProp" type="button" style="background-color:#333" onclick="savePlanParameters()" value="Save Parameters" />
                                 </p>
                             </div>
                         </div>
@@ -145,7 +145,7 @@
                             }
                             <div style="text-align:right;">
                                 <p>
-                                    <input class="cm-button-default mt0" type="button" style="background-color:#333 " onclick="savePlanParameters()" value="Save Events" />
+                                    <input class="cm-button-default mt0 loadProp" type="button" style="background-color:#333 " onclick="savePlanParameters()" value="Save Events" />
                                 </p>
                             </div>
                         </div>

@@ -47,7 +47,7 @@
                                         <div class="nav-item dropdown">
                                             <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
                                             <div class="dropdown-menu" aria-labelledby="dropdown01">
-                                                <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewAppConfigdetailsById('@item.Id')">Edit</a>
+                                                <a class="dropdown-item cm-dropdown-option loadProp" data-target="#myModal" onclick="ViewAppConfigdetailsById('@item.Id')">Edit</a>
                                             </div>
                                         </div>
                                     </td>
@@ -60,12 +60,12 @@
                 <hr />
                 <div>
                      <h2>Application Logs</h2>
-                     <a class="cm-button-default mt0" asp-area="" asp-controller="ApplicationLog" asp-action="Index">View Logs</a>
+                     <a class="cm-button-default mt0 load" asp-area="" asp-controller="ApplicationLog" asp-action="Index">View Logs</a>
                 </div>
                 <br />
                 <div>
                      <h2>Email Templates</h2>
-                     <a class="cm-button-default mt0" asp-area="" asp-controller="ApplicationConfig" asp-action="EmailTemplates">View Templates</a>
+                     <a class="cm-button-default mt0 load" asp-area="" asp-controller="ApplicationConfig" asp-action="EmailTemplates">View Templates</a>
                 </div>
                 <br />
                 <h2>Upload Logo</h2>
@@ -81,7 +81,7 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-md-10">
-                                    <input type="submit" class="btn btn-primary" onclick = "changeValue()" value="Upload" />
+                                    <input type="submit" class="btn btn-primary loadProp" onclick = "changeValue()" value="Upload" />
                                 </div>
                             </div>
                         </form>

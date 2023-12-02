@@ -1,0 +1,517 @@
+﻿@using Marketplace.SaaS.Accelerator.Services.Models
+@model IEnumerable<Marketplace.SaaS.Accelerator.DataAccess.Entities.ManageLicenses>
+@{
+    ViewData["Title"] = "ManageSubscriptions";
+
+    var subinfo = ViewBag.ManagedLicensedUsers;
+}
+    <!-- Bootstrap CSS and Bootstrap Icons -->
+  @*  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha... crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.18.0/font/bootstrap-icons.css" rel="stylesheet">*@
+
+    <!-- jQuery, Popper.js, and Bootstrap JS -->
+  @*  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha... crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha... crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha... crossorigin="anonymous"></script>
+*@
+
+    <!-- Success Notification -->
+    <!-- Notification for successful actions -->
+    <div style="position: absolute; top: 0; right: 0; z-index: 1050;">
+        <div id="successNotification" class="alert alert-success alert-dismissible fade" role="alert">
+            <strong>Success!</strong> <span id="successText"></span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Auto Assign Notifications -->
+    <!-- Notification for successful auto-assign updates -->
+    <div style="position: absolute; top: 0; right: 0; z-index: 1050;">
+        <div class="toast" id="autoAssignToast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+            <div class="toast-body bg-success text-white">
+                Auto assign updated successfully!
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <!-- Bootstrap container class to center content -->
+    <div class="container ">
+        <!-- License Information Card -->
+        <div class="card m-3">
+            <!-- Header Row with App Logo and Name -->
+           @* <div class="row m-3">
+                <div>
+                    <img src="./color.png" style="height: 100px; width: 100px;" alt="Img">
+                </div>
+                <div class="mt-3">
+                    <p style="font-weight: 600;">Test App</p>
+                    <p>Reliance Infosystems</p>
+                </div>
+            </div>*@
+            <!-- Details Rows -->
+            <div class="col mx-3">
+                <!-- Subscription ID -->
+                <div class="row col-12 mt-2 border-bottom">
+                    <p class="col-2 text-muted font-italic">Subscription ID</p>
+                    <p class="col-6">@subinfo.Id</p>
+                </div>
+                <!-- Status -->
+                <div class="row col-12 mt-2 border-bottom">
+                    <p class="col-2 text-muted font-italic">Status</p>
+                    <p id="status" class="col-1" style="display: flex; align-items: center; justify-content: flex-start; width:fit-content; border-radius: 20px; min-width: max-content; color: white; font-size: 14px;">
+                    <i class="bi bi-check-circle-fill" style="margin-right: 5px;"></i>
+                    </p>
+                </div>
+                <!-- Billing Frequency -->
+                <div class="row col-12 mt-2 border-bottom">
+                    <p class="col-2 text-muted font-italic">Billing frequency</p>
+                <p class="col-6">@subinfo.Term.TermUnit</p>
+                </div>
+                <!-- Term End -->
+                <div class="row col-12 mt-2 border-bottom">
+                    <p class="col-2 text-muted font-italic">Term end</p>
+                <p class="col-6">@string.Format("{0:dd, MMMM yyyy}", subinfo.Term.EndDate)</p>
+                </div>
+                <!-- License Type -->
+                <div class="row col-12 mt-2 border-bottom">
+                    <p class="col-2 text-muted font-italic">License type</p>
+                <p class="col-6">@if(subinfo.IsPerUserPlan == false) { @string.Concat("Flat Rate"); } else { @string.Concat("Per User"); }</p>
+            </div>
+
+                <!-- Auto Assign License Switch -->
+               @* <div class="row col-12 mt-2 border-bottom">
+                    <p class="col-2 text-muted font-italic">Auto assign license</p>
+                    <div class="custom-control custom-switch  my-1">
+                        <input type="checkbox" class="custom-control-input bg-danger" id="customSwitch1">
+                        <label class="custom-control-label" for="customSwitch1">No</label>
+                    </div>
+                </div>*@
+
+                <!-- Licenses Progress Bar -->
+                <div class="row col-12 mt-2 border-bottom">
+                    <p class="col-2 text-muted font-italic">Licenses</p>
+                    <div class="progress col-3 p-0 my-2">
+                        <div id="userProgressBar" class="progress-bar bg-info" role="progressbar" style="height: 20px; border-radius: 5px;  display: flex; align-items: center; justify-content: center;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="@subinfo.Quantity">
+                            <span class="progress-text" style="display: inline-block; margin-top: 2px; font-weight: bold; font-size:12px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Licenses Table Card -->
+        <div class="card m-3">
+            <!-- Header Row with Licenses Heading -->
+            <div class="row m-3">
+                <h6>Manage License</h6>
+            </div>
+            <!-- Controls Row with Add User Button and Search Box -->
+            <div class="col d-flex justify-content-between">
+                <div>
+                    <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#addUserModal">
+                        <i class="fa fa-user-plus"></i> Add User
+                    </button>
+                <!-- Remove Selected Button -->
+                <button class="btn btn-danger btn-sm" style="display: none;" onclick="removeSelected()" id="removeButton">
+                    <i class="fa fa-trash"></i> Remove</button>
+                </div>
+                <div>
+                    <input type="text" id="searchInput" placeholder="Search" oninput="searchUsers()" style="margin-top: 10px; padding: 5px; border: 1px solid #ccc; border-radius: 5px; width: 200px;">
+                </div>
+            </div>
+            <!-- Licenses Table -->
+            <div class="col m-3">
+                <table class="table table-hover" id="userTable">
+                    <thead>
+                        <tr>
+                            <th scope="col"><input type="checkbox" onchange="toggleRemoveButton()"></th>
+                            <th scope="col">Email Address</th>
+                            <th scope="col">Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var manageLicense in Model)
+                         {
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td class="text-onmobile">@manageLicense.EmailAddress</td>
+                            <td class="text-onmobile">@manageLicense.Role</td>
+                        </tr>
+                         }
+                    </tbody>
+                </table>
+            <button type="button" id="btnSave" class="btn btn-info save mt-3 loadProp text-sm-left">
+                <i class="fa fa-check-circle"></i> Save Changes
+            </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <!-- Modal for adding a new user -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Add User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form for adding a new user -->
+                    <form id="addUserForm">
+                        <div class="form-group">
+                            <label for="userName">Email Address</label>
+                            <input type="text" class="form-control" id="userName" placeholder="enter email address" required>
+                        </div>
+                        <div class="form-group" hidden>
+                            <label for="userName">Role</label>
+                            <input type="text" class="form-control" id="role" value="User">
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="adminCheck" name="User" value="User">
+                            <label class="form-check-label">Can Manage License?</label>
+                        </div>
+
+                        
+                        <!-- Add User Button -->
+                        <button type="button" class="btn btn-danger btn-sm" onclick="addUser()"><i class="fa fa-user-plus"></i>&nbsp;Add</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remove User(s) Modal -->
+    <!-- Modal for confirming the removal of selected users -->
+    <div class="modal fade" id="confirmRemoveModal" tabindex="-1" role="dialog" aria-labelledby="confirmRemoveModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmRemoveModalLabel">Confirm Removal</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to remove the selected user(s)?
+                </div>
+                <div class="modal-footer">
+                    <!-- Cancel Button -->
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
+                    <!-- Remove Button -->
+                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmRemove()">Remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Code -->
+    <script>
+        var isRemovalActive = false;
+        // Get the status element
+        var statusElement = document.getElementById('status');
+
+        // Set the status dynamically
+    var statusValue = "@subinfo.SubscriptionStatus";  // Replace this with actual status value
+        setStatus(statusValue);
+
+        // Function to set the status
+        function setStatus(status) {
+            // Set the inner text
+        statusElement.innerText += status;
+
+            // Set the background color based on the status
+        if (status === "Subscribed") {
+                statusElement.style.backgroundColor = "green";
+            } else if (status === "PendingFulfilmentStart") {
+                statusElement.style.backgroundColor = "orange";
+             } else if (status === "Unsubscribed") {
+                statusElement.style.backgroundColor = "red";
+            }
+            else{
+            statusElement.style.backgroundColor = "gray";
+            }
+        }
+
+
+        // Function to run when the DOM is fully loaded
+        document.addEventListener("DOMContentLoaded", function () {
+            updateEventListeners();
+            updateProgressBar();
+        });
+
+        // This function saves all changes
+            $("body").on("click", "#btnSave", function () {
+                var ManageLicenses = new Array();
+                $("#userTable TBODY TR").each(function () {
+                    var row = $(this);
+                    var ManageLicense = {};
+                    ManageLicense.EmailAddress = row.find("TD").eq(1).html();
+                    ManageLicense.Role = row.find("TD").eq(2).html();
+                    ManageLicense.OfferId = "@subinfo.OfferId";
+                    ManageLicense.PlanId = "@subinfo.PlanId";
+                    ManageLicense.SubscriptionId = "@subinfo.Id";
+                    ManageLicense.TenantId = "@subinfo.Purchaser.TenantId";
+                    if (ManageLicense.EmailAddress && ManageLicense.EmailAddress.trim()) {
+                        ManageLicenses.push(ManageLicense);
+                    }
+                });
+
+        var test = isRemovalActive;
+
+               if(isRemovalActive == false){
+                    $.ajax({
+                    type: "POST",
+                    url: "SaveAllLicensedUsers",
+                    data: JSON.stringify(ManageLicenses),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (result) {
+                        //debugger;
+                        successconfirmDialog();
+                    },
+                    Error:
+                        function (result) {
+                            errorconfirmDialog();
+                        }
+                });
+               }else{
+                    $.ajax({
+                    type: "POST",
+                    url: "RemoveAllLicensedUsers",
+                    data: JSON.stringify(ManageLicenses),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (result) {
+                        //debugger;
+                        successconfirmDialog();
+                    },
+                    Error:
+                        function (result) {
+                            errorconfirmDialog();
+                        }
+                });
+               }
+               isRemovalActive = false;
+            });
+        
+            function successconfirmDialog() {
+                swal({
+                    title: "Saved",
+                    text: "Users saved successfully.",
+                    icon: "success",
+                    timer: 1000
+                })
+            }
+            function errorconfirmDialog() {
+                swal({
+                    title: "Error",
+                    text: "An error has occured, please check the log.",
+                    icon: "error",
+                    timer: 1000
+                })
+            }
+        // Function to update event listeners for checkboxes and buttons
+        function updateEventListeners() {
+            var headerCheckbox = document.querySelector('#userTable thead input[type="checkbox"]');
+            var checkboxes = document.querySelectorAll('#userTable tbody input[type="checkbox"]');
+            var removeButton = document.getElementById('removeButton');
+
+            checkboxes.forEach(function (checkbox) {
+                checkbox.addEventListener('change', toggleRemoveButton);
+            });
+
+            headerCheckbox.addEventListener('change', function () {
+                checkboxes.forEach(function (checkbox) {
+                    checkbox.checked = headerCheckbox.checked;
+                });
+                toggleRemoveButton();
+            });
+
+            removeButton.addEventListener('click', function () {
+                removeSelected();
+            });
+        }
+
+        // Function to toggle the remove button based on checkbox states
+        function toggleRemoveButton() {
+            var checkboxes = document.querySelectorAll('#userTable tbody input[type="checkbox"]');
+            var removeButton = document.getElementById('removeButton');
+
+            var atLeastOneChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+            removeButton.style.display = atLeastOneChecked ? 'inline-block' : 'none';
+        }
+
+        // Function to show the remove user(s) confirmation modal
+        function removeSelected() {
+            var checkboxes = document.querySelectorAll('#userTable tbody input[type="checkbox"]:checked');
+
+            if (checkboxes.length === 0) {
+                alert('Please select at least one user to remove.');
+                return;
+            }
+            isRemovalActive = true;
+            // Show the confirmation modal
+            $('#confirmRemoveModal').modal('show');
+        }
+
+        // Function to confirm and remove selected users
+        function confirmRemove() {
+            var checkboxes = document.querySelectorAll('#userTable tbody input[type="checkbox"]:checked');
+
+            checkboxes.forEach(function (checkbox) {
+                var row = checkbox.closest('tr');
+                row.remove();
+            });
+
+            document.getElementById('removeButton').style.display = 'none';
+
+            isRemovalActive = true;
+            // Show success notification
+            showSuccessNotification('User(s) removed successfully');
+
+            // Close the confirmation modal
+            $('#confirmRemoveModal').modal('hide');
+
+            // Reattach event listeners after modifying the table
+            updateEventListeners();
+
+            // Update the progress bar
+            updateProgressBar();
+        }
+
+        // Function to add a new user
+        function addUser() {
+            var userName = document.getElementById("userName").value;
+            var role = document.getElementById("role").value;
+
+            // Check if the input fields are not empty
+            if (userName.trim() === '') {
+                alert('Please enter Email Address.');
+                return;
+            }
+
+            // Create a new row
+            var newRow = document.createElement("tr");
+
+            // Create cells for the new row
+            var checkboxCell = document.createElement("td");
+            var nameCell = document.createElement("td");
+            nameCell.className += "text-onmobile";
+            var idCell = document.createElement("td");
+            idCell.className += "text-onmobile";
+
+            // Create checkboxes and text nodes
+            var checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.addEventListener('change', toggleRemoveButton); // Attach event listener to the new checkbox
+            var nameNode = document.createTextNode(userName);
+            var idNode = document.createTextNode(role);
+
+            // Append elements to cells
+            checkboxCell.appendChild(checkbox);
+            nameCell.appendChild(nameNode);
+            idCell.appendChild(idNode);
+
+            // Append cells to the new row
+            newRow.appendChild(checkboxCell);
+            newRow.appendChild(nameCell);
+            newRow.appendChild(idCell);
+
+            // Append the new row to the table's tbody
+            document.getElementById("userTable").getElementsByTagName('tbody')[0].appendChild(newRow);
+
+            // Show success notification
+            showSuccessNotification('User added successfully');
+            // Close the modal
+            $('#addUserModal').modal('hide');
+
+            // Reset the form
+            document.getElementById("addUserForm").reset();
+
+            updateEventListeners(); // Reattach event listeners after modifying the table
+
+            // Update the progress bar
+            updateProgressBar();
+
+        }
+            //Function to toggle isAdmin checkbox
+            var adminCheck = document.getElementById('adminCheck');
+            var role = document.getElementById('role');
+            // Add an event listener to the checkbox
+            adminCheck.addEventListener('change', function () {
+                // Update the value of the text input based on checkbox status
+                role.value = adminCheck.checked ? 'Admin' : 'User';
+            });
+
+        // Function to update the progress bar based on the number of users
+        function updateProgressBar() {
+            var table = document.getElementById("userTable");
+            var rowCount = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+            var progressBar = document.getElementById("userProgressBar");
+            var progressText = progressBar.querySelector('.progress-text');
+
+            // Set the maximum value of the progress bar
+        progressBar.setAttribute("aria-valuemax", @subinfo.Quantity);
+
+            // Update the value and text
+        progressBar.style.minWidth = ((rowCount / @subinfo.Quantity) * 100) + "%";
+            progressBar.setAttribute("aria-valuenow", rowCount);
+
+            // Update the progress bar text
+        progressText.innerHTML = rowCount + "/@subinfo.Quantity";
+        }
+
+        // Function to search and filter users
+        function searchUsers() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("userTable");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[1]; // Index 1 is the "Name" column
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+
+            // Update event listeners after modifying the table
+            updateEventListeners();
+        }
+
+        // Function to show a success notification
+        function showSuccessNotification(message) {
+            var successNotification = document.getElementById('successNotification');
+            var successText = document.getElementById('successText');
+
+            // Set the success message
+            successText.textContent = message;
+
+            // Show the success notification
+            successNotification.classList.add('show');
+
+            // Hide the notification after 3 seconds (adjust as needed)
+            setTimeout(function () {
+                successNotification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Run the updateProgressBar function on page load
+        window.onload = function () {
+            //var isRemovalActive = false;
+            updateProgressBar();
+        };
+    </script>

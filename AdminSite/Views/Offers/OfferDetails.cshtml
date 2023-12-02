@@ -14,12 +14,12 @@
 
                             <div class="card card-header mb0 pb0 maxwidth">
                                 <input type='hidden' id='OfferID' name='OfferID' value="@Model.OfferID"/>
-                                <input type='hidden' id='OfferName' name='OfferName' value="@Model.OfferName"/>
+                                <input type='hidden' id='OfferName' name='OfferName' value="@Model.OfferName.Replace("_", " ").Replace("-", " ")" />
                                 <input type='hidden' id='OfferGuid' name='OfferGuid' value="@Model.OfferGuid"/>
                                 <input type='hidden' id='Id' name='Id' value="@Model.Id"/>
                                 <dl class="row">
                                     <dt class="col-2 text-right" style="margin-left: -100px;"><span>Offer name</span></dt>
-                                    <dd class="col-3 text-left">@Model.OfferID</dd>
+                                    <dd class="col-3 text-left">@Model.OfferID.Replace("_", " ").Replace("-", " ")</dd>
                                 </dl>
                             </div>
 
@@ -135,7 +135,7 @@
 
                             <div calss="text-right maxwidth" style="text-align: right; width: 1300px;">
                                 <input class="cm-button-default mt0" style="line-height: 10px; background-color: #333;" type="button" id="btnAdd2" value="Add New Row"/>
-                                <input class="cm-button-default mt0" style="line-height: 10px; background-color: #333;" type="button" onclick="saveOfferParameters()" value="Save Changes"/>
+                                <input class="cm-button-default mt0 loadProp" style="line-height: 10px; background-color: #333;" type="button" onclick="saveOfferParameters()" value="Save Changes"/>
                             </div>
                         </div>
                     </form>

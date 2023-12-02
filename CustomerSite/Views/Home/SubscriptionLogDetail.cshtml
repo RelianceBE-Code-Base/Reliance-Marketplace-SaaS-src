@@ -10,9 +10,9 @@
             <div class="card card-header mb0 pb0">
                 <dl class="row">
                     <dt class="col-2 text-right"><b>Plan</b></dt>
-                    <dd class="col-3 text-left">@Model.FirstOrDefault()?.Subscription?.AmpplanId</dd>
+                    <dd class="col-3 text-left">@Model.FirstOrDefault()?.Subscription?.AmpplanId.Replace("_", " ").Replace("-", " ")</dd>
                     <dt class="col-3 text-right"><b>Subscription</b></dt>
-                    <dd class="col-4 text-left">@Model.FirstOrDefault()?.Subscription?.Name</dd>
+                    <dd class="col-4 text-left">@Model.FirstOrDefault()?.Subscription?.Name.Replace("_", " ").Replace("-", " ")</dd>
                 </dl>
             </div>
             <table class="table-bordered table-responsive cm-table">
@@ -33,7 +33,7 @@
                                 @if (log.CreateDate != null && log.CreateDate.HasValue)
                                 {@log.CreateDate.Value.ToString("MM/dd/yyyy hh:mm tt")}
                             </td>
-                            <td class="text-left">@log.Subscription.Name</td>
+                            <td class="text-left">@log.Subscription.Name.Replace("_", " ").Replace("-", " ")</td>
                             <td class="text-left">@log.Attribute</td>
                             <td class="text-left">@log.OldValue</td>
                             <td class="text-left">@log.NewValue</td>

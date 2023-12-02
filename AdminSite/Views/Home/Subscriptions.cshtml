@@ -19,7 +19,7 @@
                 <div class="card-body">
                     <div class="text-left">
                         <span class="cm-section-heading">Subscriptions</span>
-                        <a onclick="if (confirm('Are you sure you want to fetch all subscriptions?')) { fetchAllSubscriptions(); } else { return false;}" class="btn cm-button text-right float-right">Fetch All Subscriptions</a>
+                        <a onclick="fetchAllSubscriptions()" class="btn cm-button text-right float-right loadProp">Fetch All Subscriptions</a>
                     </div>
                     <hr />
                     <div class="filter-box">
@@ -57,10 +57,10 @@
                                                <td class="text-left">
                                                 @Html.HiddenFor(s => s.Subscriptions[i].Id)
                                                 @Html.HiddenFor(s => s.Subscriptions[i].PlanId)
-                                                @subscription.Name
+                                                @subscription.Name.Replace("_", " ").Replace("-", " ")
                                             </td>
-                                            <td class="text-left">@subscription.OfferId</td>
-                                            <td class="text-left">@subscription.PlanId</td>
+                                            <td class="text-left">@subscription.OfferId.Replace("_", " ").Replace("-", " ")</td>
+                                            <td class="text-left">@subscription.PlanId.Replace("_", " ").Replace("-", " ")</td>
                                             <td class="text-left">
                                                 @if (@subscription.IsPerUserPlan)
                                                 {
@@ -76,25 +76,25 @@
                                                 <div class="nav-item dropdown">
                                                     <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
                                                     <div class="dropdown-menu" aria-labelledby="dropdown01">
-                                                        <a class="dropdown-item cm-dropdown-option" asp-controller="Home" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id">View Details</a>
+                                                        <a class="dropdown-item cm-dropdown-option load" asp-controller="Home" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id">View Details</a>
                                                         @if (subscription.IsMeteringSupported && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
                                                         {
-                                                            <a class="dropdown-item cm-dropdown-option" asp-action="RecordUsage" asp-controller="Home" asp-route-subscriptionId="@subscription.SubscribeId">Manage Usage</a>
+                                                            <a class="dropdown-item cm-dropdown-option load" asp-action="RecordUsage" asp-controller="Home" asp-route-subscriptionId="@subscription.SubscribeId">Manage Usage</a>
                                                         }
                                                         @if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation || subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart || subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.ActivationFailed)
                                                         {
-                                                            <a class="dropdown-item cm-dropdown-option" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Activate">Activate</a>
+                                                            <a class="dropdown-item cm-dropdown-option load" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Activate">Activate</a>
                                                         }
                                                         @if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed || subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed)
                                                         {
-                                                            <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Plan</a>
-                                                            <a class="dropdown-item cm-dropdown-option" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Deactivate">Unsubscribe</a>
+                                                            <a class="dropdown-item cm-dropdown-option loadProp" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Plan</a>
+                                                            <a class="dropdown-item cm-dropdown-option load" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Deactivate">Unsubscribe</a>
                                                         }
                                                         @if (subscription.IsPerUserPlan && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
                                                         {
-                                                            <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionQuantityDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Quantity</a>
+                                                            <a class="dropdown-item cm-dropdown-option loadProp" onclick="ViewSubscriptionQuantityDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Quantity</a>
                                                         }
-                                                        <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@subscription.Id')">Activity Log</a>
+                                                        <a class="dropdown-item cm-dropdown-option loadProp" data-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@subscription.Id')">Activity Log</a>
                                                     </div>
                                                 </div>
 
@@ -178,6 +178,7 @@
                 if (willChange) {           
                     $("#frmButton").prop("disabled", true);
                     $("#frmSpinner").prop("hidden", false);
+                    $("#frmText").prop("hidden", false);
                     $("#frmSubscriptionDetail").submit();
                 }
             });
@@ -215,6 +216,7 @@
                 if (willChange) {
                     $("#frmButton").prop("disabled", true);
                     $("#frmSpinner").prop("hidden", false);
+                    $("#frmText").prop("hidden", false);
                     $("#frmSubscriptionQuantityDetailAdmin").submit();
                 }
             });
@@ -223,28 +225,39 @@
     var t = $("input[name='__RequestVerificationToken']").val();
 
     function fetchAllSubscriptions() {
-        $.ajax({
-            type: "Post",
-            headers:
-            {
-                "RequestVerificationToken": t
-            },
-            url: "FetchAllSubscriptions",
-            contentType: "application/json; charset=utf-8",
-            datatype: "json",
-            beforeSend: function() {
-                console.log('beforeSend');
-                swal({ title:"Inprogress!", text: "Fetching subscriptions from SaaS fulfilment api.", icon: "info",  button: false, closeOnClickOutside: false });
-            },
-            success : function(data) {
-                console.log('complete');
-                swal({ title: "Complete", text: "Refresh the page to see any new fetched SaaS subscriptions.", icon: "info", button: true });
-            },
-            error: function (data) {
-                console.log('error');
-                swal({ title: "Error", text:"Something went wrong. Check logger logs.", icon: "error" });
-            }
-        });
+        swal({
+            text: "Are you sure you want to fetch all subscriptions?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+           .then((willChange) => {
+                if (willChange) {
+                 $.ajax({
+                    type: "Post",
+                    headers:
+                    {
+                        "RequestVerificationToken": t
+                    },
+                    url: "FetchAllSubscriptions",
+                    contentType: "application/json; charset=utf-8",
+                    datatype: "json",
+                    beforeSend: function() {
+                        console.log('beforeSend');
+                        swal({ title:"Inprogress!", text: "Fetching subscriptions from SaaS fulfilment api.", icon: "info",  button: false, closeOnClickOutside: false });
+                    },
+                    success : function(data) {
+                        console.log('complete');
+                        swal({ title: "Complete", text: "Refresh the page to see any new fetched SaaS subscriptions.", icon: "info", button: true });
+                    },
+                    error: function (data) {
+                        console.log('error');
+                        swal({ title: "Error", text:"Something went wrong. Check logger logs.", icon: "error" });
+                    }
+                    });
+
+                 }
+            });
     }
 
     function filterSubscriptions() {

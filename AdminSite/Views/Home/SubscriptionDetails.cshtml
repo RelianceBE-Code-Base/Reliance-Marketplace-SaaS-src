@@ -19,6 +19,10 @@
             }
             else
             {
+                var replacedPlanId = Model.PlanId.ToString().Replace("_", " ").Replace("-", " ");
+                var replacedOfferId = Model.OfferId.ToString().Replace("_", " ").Replace("-", " ");
+                var replacedName = Model.Name.ToString().Replace("_", " ").Replace("-", " ");
+
                 <div class="cm-panel-default mt20">
                     <dl class="row text-left">
                         <dt class="col-sm-3 p-2 p10">
@@ -43,19 +47,19 @@
                             @Html.DisplayName("Name ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
-                            @Html.DisplayFor(model => model.Name)
+                            @replacedName
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Offer Name ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
-                            @Html.DisplayFor(model => model.OfferId)
+                            @replacedOfferId
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Plan Name ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
-                            @Html.DisplayFor(model => model.PlanId)
+                            @replacedPlanId
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Term ")
@@ -127,13 +131,13 @@
                 <div class="text-right">
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed || Model.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed)
                     {
-                        <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" class="cm-button-danger text-right">Unsubscribe</button>
+                        <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" class="cm-button-danger text-right load">Unsubscribe</button>
                     }
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart || Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation || Model.SubscriptionStatus == SubscriptionStatusEnumExtension.ActivationFailed)
                     {
-                        <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Activate" class="cm-button-default mt40 text-right">Activate</button>
+                        <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Activate" class="cm-button-default mt40 text-right load">Activate</button>
                     }
-                    <button type="submit" asp-action="Subscriptions" class="cm-button-default mt40 text-right">Go to Subscription List</button>
+                    <button type="submit" asp-action="Subscriptions" class="cm-button-default mt40 text-right load">Subscription List</button>
                 </div>
             }
         </div>
