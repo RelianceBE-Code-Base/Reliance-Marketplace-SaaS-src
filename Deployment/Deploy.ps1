@@ -66,7 +66,7 @@ if ($SQLDatabaseName -eq "") {
 
 if($KeyVault -eq "")
 {
-   $KeyVault=$WebAppNamePrefix+"--kv"
+   $KeyVault=$WebAppNamePrefix+"-kv"
 }
 
 $SaaSApiConfiguration_CodeHash= git log --format='%H' -1
