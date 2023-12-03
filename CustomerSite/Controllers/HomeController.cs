@@ -585,7 +585,7 @@ public class HomeController : BaseController
                                         };
                                         this.subscriptionLogRepository.Save(auditLog);
 
-                                        ManageLicenses manageLicense = new ManageLicenses()
+                                        ManageLicense manageLicense = new ManageLicense()
                                         {
                                             UserId = currentUserId.ToString(),
                                             EmailAddress = CurrentUserEmailAddress,
@@ -864,7 +864,7 @@ public class HomeController : BaseController
         try
         {
             SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
-            IEnumerable<ManageLicenses> ManagedLicensedUsers = new List<ManageLicenses>();
+            IEnumerable<ManageLicense> ManagedLicensedUsers = new List<ManageLicense>();
 
 
             if (this.User.Identity.IsAuthenticated)
@@ -883,6 +883,8 @@ public class HomeController : BaseController
 
                 ManagedLicensedUsers = manageLicenseRepository.GetAllLicensedUsers(subscriptionId.ToString()).ToList();
             }
+
+
 
             var isAdmin = ManagedLicensedUsers.Where(x=>x.Role == "Admin" && x.EmailAddress.ToLower() == this.CurrentUserEmailAddress.ToLower()).Count();
             if (isAdmin == 0)
@@ -906,14 +908,14 @@ public class HomeController : BaseController
     }
 
 
-    public JsonResult SaveAllLicensedUsers([FromBody] IEnumerable<ManageLicenses> ManageLicenses)
+    public JsonResult SaveAllLicensedUsers([FromBody] IEnumerable<ManageLicense> ManageLicense)
     {
       
         this.logger.Info("ManageLicenses Controller / SaveAllLicensedUsers");
         try
         {
-            var subId = ManageLicenses.FirstOrDefault().SubscriptionId;
-            return Json(this.manageLicenseRepository.SaveAllManageLicenses(ManageLicenses, subId));
+            var subId = ManageLicense.FirstOrDefault().SubscriptionId;
+            return Json(this.manageLicenseRepository.SaveAllManageLicenses(ManageLicense, subId));
         }
         catch (Exception ex)
         {
@@ -923,14 +925,14 @@ public class HomeController : BaseController
 
     }
 
-    public JsonResult RemoveAllLicensedUsers([FromBody] IEnumerable<ManageLicenses> ManageLicenses)
+    public JsonResult RemoveAllLicensedUsers([FromBody] IEnumerable<ManageLicense> ManageLicense)
     {
 
         this.logger.Info("ManageLicenses Controller / RemoveAllLicensedUsers");
         try
         {
-            var subId = ManageLicenses.FirstOrDefault().SubscriptionId;
-            return Json(this.manageLicenseRepository.RemoveAllManageLicenses(ManageLicenses, subId));
+            var subId = ManageLicense.FirstOrDefault().SubscriptionId;
+            return Json(this.manageLicenseRepository.RemoveAllManageLicenses(ManageLicense, subId));
         }
         catch (Exception ex)
         {

@@ -7,173 +7,173 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Marketplace.SaaS.Accelerator.DataAccess.Services
+namespace Marketplace.SaaS.Accelerator.DataAccess.Services;
+
+/// <summary>
+/// The Known users data repository.
+/// </summary>
+/// <seealso cref="IManageLicenseRepository" />
+public class ManageLicenseRepository : IManageLicenseRepository
 {
     /// <summary>
-    /// The Known users data repository.
+    /// The this.context.
     /// </summary>
-    /// <seealso cref="IManageLicenseRepository" />
-    public class ManageLicenseRepository : IManageLicenseRepository
+    private readonly SaasKitContext context;
+
+    /// <summary>
+    /// The disposed.
+    /// </summary>
+    private bool disposed = false;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ManageLicenseRepository"/> class.
+    /// </summary>
+    /// <param name="context">The this.context.</param>
+    public ManageLicenseRepository(SaasKitContext context)
     {
-        /// <summary>
-        /// The this.context.
-        /// </summary>
-        private readonly SaasKitContext context;
+        this.context = context;
+    }
 
-        /// <summary>
-        /// The disposed.
-        /// </summary>
-        private bool disposed = false;
+    /// <summary>
+    /// Gets all known users.
+    /// </summary>
+    /// <returns>
+    /// All known users.
+    /// </returns>
+    public IEnumerable<ManageLicense> GetAllLicensedUsers(string subscriptionId)
+    {
+        return this.context.ManageLicense.Where(x=>x.SubscriptionId == subscriptionId).ToList();
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ManageLicenseRepository"/> class.
-        /// </summary>
-        /// <param name="context">The this.context.</param>
-        public ManageLicenseRepository(SaasKitContext context)
-        {
-            this.context = context;
-        }
+    /// <summary>
+    /// Gets the known user detail.
+    /// </summary>
+    /// <param name="emailAddress">The email address.</param>
+    /// <param name="roleId">The role identifier.</param>
+    /// <returns>
+    /// User detail by email and role.
+    /// </returns>
+    //public KnownUsers GetKnownUserDetail(string emailAddress, int roleId)
+    //{
+    //    return this.context.KnownUsers.Where(s => s.UserEmail == emailAddress && s.RoleId == roleId).FirstOrDefault();
+    //}
 
-        /// <summary>
-        /// Gets all known users.
-        /// </summary>
-        /// <returns>
-        /// All known users.
-        /// </returns>
-        public IEnumerable<ManageLicenses> GetAllLicensedUsers(string subscriptionId)
-        {
-            return this.context.ManageLicenses.Where(x=>x.SubscriptionId == subscriptionId).ToList();
-        }
+    /// <summary>
+    /// Adds the know users from application configuration.
+    /// </summary>
+    /// <param name="knownUsers">The known users.</param>
+    //public void AddUsers(string knownUsers)
+    //{
+    //    var existingUsers = this.context.KnownUsers;
+    //    if (existingUsers != null && existingUsers.ToList().Count() == 0)
+    //    {
+    //        List<string> knownUsersList = knownUsers.Split(',').ToList();
+    //        foreach (var user in knownUsersList)
+    //        {
+    //            var users = new KnownUsers()
+    //            {
+    //                UserEmail = user.Trim(),
+    //                RoleId = 1, // Publisher Admin
+    //            };
+    //            this.context.KnownUsers.Add(users);
+    //            this.context.SaveChanges();
+    //        }
+    //    }
+    //}
 
-        /// <summary>
-        /// Gets the known user detail.
-        /// </summary>
-        /// <param name="emailAddress">The email address.</param>
-        /// <param name="roleId">The role identifier.</param>
-        /// <returns>
-        /// User detail by email and role.
-        /// </returns>
-        //public KnownUsers GetKnownUserDetail(string emailAddress, int roleId)
-        //{
-        //    return this.context.KnownUsers.Where(s => s.UserEmail == emailAddress && s.RoleId == roleId).FirstOrDefault();
-        //}
+    /// <summary>
+    /// Adds the specified entities.
+    /// </summary>
+    /// <param name="entities">The entities.</param>
+    /// <returns>
+    /// Internal identifier after saving the entity.
+    /// </returns>
+    public int Save(ManageLicense manageLicense)
+    {
 
-        /// <summary>
-        /// Adds the know users from application configuration.
-        /// </summary>
-        /// <param name="knownUsers">The known users.</param>
-        //public void AddUsers(string knownUsers)
-        //{
-        //    var existingUsers = this.context.KnownUsers;
-        //    if (existingUsers != null && existingUsers.ToList().Count() == 0)
-        //    {
-        //        List<string> knownUsersList = knownUsers.Split(',').ToList();
-        //        foreach (var user in knownUsersList)
-        //        {
-        //            var users = new KnownUsers()
-        //            {
-        //                UserEmail = user.Trim(),
-        //                RoleId = 1, // Publisher Admin
-        //            };
-        //            this.context.KnownUsers.Add(users);
-        //            this.context.SaveChanges();
-        //        }
-        //    }
-        //}
-
-        /// <summary>
-        /// Adds the specified entities.
-        /// </summary>
-        /// <param name="entities">The entities.</param>
-        /// <returns>
-        /// Internal identifier after saving the entity.
-        /// </returns>
-        public int Save(ManageLicenses manageLicenses)
-        {
-
-                var existingUser = this.context.ManageLicenses.Where(s => s.EmailAddress == manageLicenses.EmailAddress).FirstOrDefault();
-                if (existingUser == null)
-                {
-                    this.context.ManageLicenses.Add(manageLicenses);
-                    this.context.SaveChanges();
-                    return manageLicenses.Id;
-                }
-                else
-                {
-                    return 0;
-                }
-        }
-
-        /// <summary>
-        /// Removes the specified entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        //public void Remove(KnownUsers entity)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        /// <summary>
-        /// Save all known users.
-        /// </summary>
-        /// <returns>The number of modified records.</returns>
-        public int SaveAllManageLicenses(IEnumerable<ManageLicenses> manageLicenses, string subscriptionId)
-        {
-            var usersToAdd = new List<ManageLicenses>();
-            foreach (var entity in manageLicenses)
+            var existingUser = this.context.ManageLicense.Where(s => s.EmailAddress == manageLicense.EmailAddress).FirstOrDefault();
+            if (existingUser == null)
             {
-                var isUserAvaliable = context.ManageLicenses.Where(x=>x.EmailAddress == entity.EmailAddress && x.SubscriptionId == subscriptionId).FirstOrDefault();
-                if (isUserAvaliable == null)
-                {
-                    usersToAdd.Add(entity);
-                }
-
+                this.context.ManageLicense.Add(manageLicense);
+                this.context.SaveChanges();
+                return manageLicense.Id;
             }
-            this.context.ManageLicenses.AddRange(usersToAdd);
-            return this.context.SaveChanges();
-        }
-
-        public int RemoveAllManageLicenses(IEnumerable<ManageLicenses> manageLicenses, string subscriptionId)
-        {
-            var usersToRemove = new List<ManageLicenses>();
-            foreach (var entity in context.ManageLicenses.ToList())
+            else
             {
-                var isUserAvaliable = manageLicenses.Where(x => x.EmailAddress == entity.EmailAddress && x.SubscriptionId == subscriptionId).FirstOrDefault();
-                if (isUserAvaliable == null)
-                {
-                    usersToRemove.Add(entity);
-                }
-
+                return 0;
             }
-            this.context.ManageLicenses.RemoveRange(usersToRemove);
-            return this.context.SaveChanges();
-        }
+    }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+    /// <summary>
+    /// Removes the specified entity.
+    /// </summary>
+    /// <param name="entity">The entity.</param>
+    //public void Remove(KnownUsers entity)
+    //{
+    //    throw new NotImplementedException();
+    //}
+
+    /// <summary>
+    /// Save all known users.
+    /// </summary>
+    /// <returns>The number of modified records.</returns>
+    public int SaveAllManageLicenses(IEnumerable<ManageLicense> manageLicense, string subscriptionId)
+    {
+        var usersToAdd = new List<ManageLicense>();
+        foreach (var entity in manageLicense)
         {
-            this.Dispose(true);
-
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources.
-        /// </summary>
-        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed)
+            var isUserAvaliable = context.ManageLicense.Where(x=>x.EmailAddress == entity.EmailAddress && x.SubscriptionId == subscriptionId).FirstOrDefault();
+            if (isUserAvaliable == null)
             {
-                if (disposing)
-                {
-                    this.context.Dispose();
-                }
+                entity.AddedDate = DateTime.Now;
+                usersToAdd.Add(entity);
             }
 
-            this.disposed = true;
         }
+        this.context.ManageLicense.AddRange(usersToAdd);
+        return this.context.SaveChanges();
+    }
+
+    public int RemoveAllManageLicenses(IEnumerable<ManageLicense> manageLicense, string subscriptionId)
+    {
+        var usersToRemove = new List<ManageLicense>();
+        foreach (var entity in context.ManageLicense.ToList())
+        {
+            var isUserAvaliable = manageLicense.Where(x => x.EmailAddress == entity.EmailAddress && x.SubscriptionId == subscriptionId).FirstOrDefault();
+            if (isUserAvaliable == null)
+            {
+                usersToRemove.Add(entity);
+            }
+
+        }
+        this.context.ManageLicense.RemoveRange(usersToRemove);
+        return this.context.SaveChanges();
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        this.Dispose(true);
+
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources.
+    /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!this.disposed)
+        {
+            if (disposing)
+            {
+                this.context.Dispose();
+            }
+        }
+
+        this.disposed = true;
     }
 }

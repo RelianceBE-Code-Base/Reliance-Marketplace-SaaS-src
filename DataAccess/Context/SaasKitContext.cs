@@ -20,7 +20,7 @@ public partial class SaasKitContext : DbContext
     public virtual DbSet<EmailTemplate> EmailTemplate { get; set; }
     public virtual DbSet<Events> Events { get; set; }
     public virtual DbSet<KnownUsers> KnownUsers { get; set; }
-    public virtual DbSet<ManageLicenses> ManageLicenses { get; set; }
+    public virtual DbSet<ManageLicense> ManageLicense { get; set; }
     public virtual DbSet<MeteredAuditLogs> MeteredAuditLogs { get; set; }
     public virtual DbSet<MeteredDimensions> MeteredDimensions { get; set; }
     public virtual DbSet<OfferAttributes> OfferAttributes { get; set; }
@@ -150,7 +150,7 @@ public partial class SaasKitContext : DbContext
                 .ValueGeneratedOnAdd();
         });
 
-        modelBuilder.Entity<ManageLicenses>(entity =>
+        modelBuilder.Entity<ManageLicense>(entity =>
         {
             entity.Property(e => e.EmailAddress)
                 .HasMaxLength(50)

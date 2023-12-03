@@ -11,7 +11,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 /// Known User Repository.
 /// </summary>
 /// <seealso cref="System.IDisposable" />
-/// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IBaseRepository{Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.ManageLicenses}" />
+/// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IBaseRepository{Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.ManageLicense}" />
 public interface IManageLicenseRepository
 {
     /// <summary>
@@ -20,7 +20,7 @@ public interface IManageLicenseRepository
     /// <returns>
     /// All known users.
     /// </returns>
-    public IEnumerable<ManageLicenses> GetAllLicensedUsers(string subscriptionId);
+    public IEnumerable<ManageLicense> GetAllLicensedUsers(string subscriptionId);
 
     /// <summary>
     /// Gets the known user detail.
@@ -42,13 +42,13 @@ public interface IManageLicenseRepository
     /// Saves all known users.
     /// </summary>
     /// <returns>The number of modified records.</returns>
-    public int SaveAllManageLicenses(IEnumerable<ManageLicenses> manageLicenses, string subscriptionId);
+    public int SaveAllManageLicenses(IEnumerable<ManageLicense> manageLicense, string subscriptionId);
 
     /// <summary>
     /// Saves all known users.
     /// </summary>
     /// <returns>The number of modified records.</returns>
-    public int RemoveAllManageLicenses(IEnumerable<ManageLicenses> manageLicenses, string subscriptionId);
+    public int RemoveAllManageLicenses(IEnumerable<ManageLicense> manageLicense, string subscriptionId);
 
-    public int Save(ManageLicenses manageLicenses);
+    public int Save(ManageLicense manageLicense);
 }

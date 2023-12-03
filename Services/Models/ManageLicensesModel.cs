@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 namespace Marketplace.SaaS.Accelerator.Services.Models;
 public class ManageLicensesModel
 {
-    public string ManageLicenses { get; set; }
+    public string ManageLicense { get; set; }
 }
