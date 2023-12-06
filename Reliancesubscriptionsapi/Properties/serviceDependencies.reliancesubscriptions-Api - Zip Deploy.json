@@ -1,0 +1,31 @@
+{
+  "dependencies": {
+    "apis1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.ApiManagement/service/reliancesubscriptionsapi/apis/RelianceSubscriptionsApi",
+      "type": "apis.azure"
+    },
+    "secrets1": {
+      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/reliancesubscriptions-Api/providers/Microsoft.ServiceLinker/linkers/VaultUri_21363F0AE0",
+      "secretStore": "AzureAppSettings",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.KeyVault/vaults/RelianceSubscriptionsApi",
+      "type": "secrets.keyVault",
+      "connectionId": "VaultUri"
+    },
+    "mssql1": {
+      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/reliancesubscriptions-Api/providers/Microsoft.ServiceLinker/linkers/KEY_B6A93D3F72",
+      "secretStore": "AzureKeyVault",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/reliancesubscriptions-sql/databases/RelianceSaaSDB",
+      "type": "mssql.azure",
+      "connectionId": "KEY",
+      "dynamicId": null
+    },
+    "mssql2": {
+      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/reliancesubscriptions-Api/providers/Microsoft.ServiceLinker/linkers/connectionstringsdefaultconnection_797AF90C2B",
+      "secretStore": "AzureKeyVault",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/reliancesubscriptions-sql/databases/RelianceSaaSDB",
+      "type": "mssql.azure",
+      "connectionId": "connectionstrings:defaultconnection",
+      "dynamicId": null
+    }
+  }
+}

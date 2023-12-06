@@ -51,7 +51,7 @@
                                             <div class="nav-item dropdown">
                                                 <a class="nav-link dropdown cm-link-button" href="#" id="dropdown02" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
                                                 <div class="dropdown-menu" aria-labelledby="dropdown02">
-                                                    <a class="dropdown-item cm-dropdown-option loadProp" data-target="#emailTemplatesModal" onclick="ViewEmailTemplateDetailsByStatus('@template.Status')">Edit</a>
+                                                    <a class="dropdown-item cm-dropdown-option editProp" data-target="#emailTemplatesModal" onclick="ViewEmailTemplateDetailsByStatus('@template.Status')">Edit</a>
                                                 </div>
                                             </div>
                                         </td>
@@ -105,4 +105,23 @@
    
    
 
+</script>
+<script>
+    $(function () {
+        $(".editProp").on('click', function (e) {
+
+            //e.preventDefault() // prevent the form's normal submission
+
+            //
+            const loader = document.querySelector(".modal-loader");
+            const successModal = document.querySelector(".modal-success");
+
+            loader.classList.remove("hidden");
+
+            setTimeout(function () {
+                document.querySelector(".modal-loader").classList.add("hidden");
+            }, 2000);
+
+        });
+    });
 </script>

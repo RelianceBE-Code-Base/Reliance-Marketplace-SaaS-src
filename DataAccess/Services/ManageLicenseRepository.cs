@@ -40,7 +40,7 @@ public class ManageLicenseRepository : IManageLicenseRepository
     /// <returns>
     /// All known users.
     /// </returns>
-    public IEnumerable<ManageLicense> GetAllLicensedUsers(string subscriptionId)
+    public IEnumerable<ManageLicense> GetAllLicensedUsersBySub(string subscriptionId)
     {
         return this.context.ManageLicense.Where(x=>x.SubscriptionId == subscriptionId).ToList();
     }
@@ -53,33 +53,16 @@ public class ManageLicenseRepository : IManageLicenseRepository
     /// <returns>
     /// User detail by email and role.
     /// </returns>
-    //public KnownUsers GetKnownUserDetail(string emailAddress, int roleId)
-    //{
-    //    return this.context.KnownUsers.Where(s => s.UserEmail == emailAddress && s.RoleId == roleId).FirstOrDefault();
-    //}
+    public IEnumerable<ManageLicense> GetAllLicensedUsers()
+    {
+        return this.context.ManageLicense.ToList();
+    }
 
-    /// <summary>
-    /// Adds the know users from application configuration.
-    /// </summary>
-    /// <param name="knownUsers">The known users.</param>
-    //public void AddUsers(string knownUsers)
-    //{
-    //    var existingUsers = this.context.KnownUsers;
-    //    if (existingUsers != null && existingUsers.ToList().Count() == 0)
-    //    {
-    //        List<string> knownUsersList = knownUsers.Split(',').ToList();
-    //        foreach (var user in knownUsersList)
-    //        {
-    //            var users = new KnownUsers()
-    //            {
-    //                UserEmail = user.Trim(),
-    //                RoleId = 1, // Publisher Admin
-    //            };
-    //            this.context.KnownUsers.Add(users);
-    //            this.context.SaveChanges();
-    //        }
-    //    }
-    //}
+
+    public ManageLicense SubscribedUserbyEmail(string email, string offerId)
+    {
+       return this.context.ManageLicense.Where(x=>x.EmailAddress == email && x.OfferId == offerId).FirstOrDefault();
+    }
 
     /// <summary>
     /// Adds the specified entities.
@@ -103,15 +86,6 @@ public class ManageLicenseRepository : IManageLicenseRepository
                 return 0;
             }
     }
-
-    /// <summary>
-    /// Removes the specified entity.
-    /// </summary>
-    /// <param name="entity">The entity.</param>
-    //public void Remove(KnownUsers entity)
-    //{
-    //    throw new NotImplementedException();
-    //}
 
     /// <summary>
     /// Save all known users.

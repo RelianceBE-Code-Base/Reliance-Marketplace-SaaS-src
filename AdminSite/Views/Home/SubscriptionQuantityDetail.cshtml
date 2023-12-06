@@ -9,7 +9,7 @@
         <div class="modal-content">
             <div class="modal-header header-bg">
                 <h4><span class="cm-section-heading">Change Quantity</span></h4>
-                <button type="button" class="close text-right" data-dismiss="modal">&times;</button>
+                <button type="button" class="close text-right closeProp" data-dismiss="modal">&times;</button>
             </div>
             <form asp-action="ChangeSubscriptionQuantity" id="frmSubscriptionQuantityDetailAdmin" method="post">
                 <div class="modal-body text-center">
@@ -66,3 +66,22 @@
         </div>
     </div>
 </div>
+<script>
+    $(function () {
+        $(".closeProp").on('click', function (e) {
+
+            //e.preventDefault() // prevent the form's normal submission
+
+            //
+            const loader = document.querySelector(".modal-loader");
+            const successModal = document.querySelector(".modal-success");
+
+            loader.classList.remove("hidden");
+
+            setTimeout(function () {
+                document.querySelector(".modal-loader").classList.add("hidden");
+            }, 200);
+
+        });
+    });
+</script>

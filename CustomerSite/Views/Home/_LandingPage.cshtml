@@ -219,7 +219,13 @@ else
             </div>
 
             <div class="hero-texts">
-                <h3 class="greeting-text">hi, reliance automation</h3>
+                <h3 class="greeting-text">hi, @if (this.User.Identity.IsAuthenticated)
+                    {
+                        @this.User.Identity.Name
+                    }else{
+                        @string.Concat("user");
+                    }
+                    </h3>
                 <p class="sub-text">
                     Welcome to Reliance Infosystem's
                     <span class="bold-text">Offer Landing Page</span>, your central

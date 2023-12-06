@@ -55,8 +55,8 @@
         </table>
         <div class="ac-save-d">
             <p>
-                <a class="cm-button-default mt0 load" id="backButton" asp-area="" asp-controller="ApplicationConfig" asp-action="EmailTemplates">Back</a>
-                <input class="cm-button-default mt0 ac-save-i loadProp" type="button" onclick="saveEmailTemplateDetails()" value="Save Template" />
+                <a class="cm-button-default mt0 backProp" id="backButton" asp-area="" asp-controller="ApplicationConfig" asp-action="EmailTemplates">Back</a>
+                <input class="cm-button-default mt0 ac-save-i saveProp" type="button" onclick="saveEmailTemplateDetails()" value="Save Template" />
             </p>
         </div>
     </form>
@@ -72,7 +72,7 @@
             data: formobject,
             cache: false,
             success: function (result) {
-                debugger;
+                //debugger;
                 swal({
                     title: "Saved",
                     text: "Email Template saved successfully.",
@@ -91,4 +91,38 @@
         });
     }
 
+</script>
+<script>
+    $(function () {
+        $(".saveProp").on('click', function (e) {
+
+            //e.preventDefault() // prevent the form's normal submission
+
+            //
+            const loader = document.querySelector(".modal-loader");
+            const successModal = document.querySelector(".modal-success");
+
+            loader.classList.remove("hidden");
+
+            setTimeout(function () {
+                document.querySelector(".modal-loader").classList.add("hidden");
+            }, 700);
+
+        });
+    });
+</script>
+<script>
+    $(function () {
+        $(".backProp").on('click', function (e) {
+
+            //e.preventDefault() // prevent the form's normal submission
+
+            //
+            const loader = document.querySelector(".modal-loader");
+            const successModal = document.querySelector(".modal-success");
+
+            loader.classList.remove("hidden");
+
+        });
+    });
 </script>

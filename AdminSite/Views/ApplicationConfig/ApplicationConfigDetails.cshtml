@@ -42,7 +42,7 @@
         </table>
         <div class="ac-save-d">
             <p>
-                <a class="cm-button-default mt0 load" id="backButton" asp-area="" asp-controller="ApplicationConfig" asp-action="Index">Back</a>
+                <a class="cm-button-default mt0 backProp" id="backButton" asp-area="" asp-controller="ApplicationConfig" asp-action="Index">Back</a>
                 <input class="cm-button-default mt0 ac-save-i loadProp" type="button" onclick="saveAppConfigDetails()" value="Save App Config" />
             </p>
         </div>
@@ -59,7 +59,7 @@
             data: formobject,
             cache: false,
             success: function (result) {
-                debugger;
+                //debugger;
                 swal({
                     title: "Saved",
                     text: "App config details saved successfully.",
@@ -78,4 +78,23 @@
         });
     }
 
+</script>
+<script>
+    $(function () {
+        $(".backProp").on('click', function (e) {
+
+            //e.preventDefault() // prevent the form's normal submission
+
+            //
+            const loader = document.querySelector(".modal-loader");
+            const successModal = document.querySelector(".modal-success");
+
+            loader.classList.remove("hidden");
+
+            setTimeout(function () {
+                document.querySelector(".modal-loader").classList.add("hidden");
+            }, 2000);
+
+        });
+    });
 </script>

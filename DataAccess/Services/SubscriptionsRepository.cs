@@ -153,7 +153,7 @@ public class SubscriptionsRepository : ISubscriptionsRepository
         {
             return this.context.Subscriptions.Include(s => s.User).Where(s => s.User != null && s.User.EmailAddress == partnerEmailAddress);
         }
-    }
+     }
 
     /// <summary>
     /// Gets the subscriptions by ScheduleId.

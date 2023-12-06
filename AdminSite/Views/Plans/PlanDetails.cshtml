@@ -89,7 +89,7 @@
                             }
                             <div style="text-align:right;">
                                 <p>
-                                    <input class="cm-button-default mt0 loadProp" type="button" style="background-color:#333" onclick="savePlanParameters()" value="Save Parameters" />
+                                    <input class="cm-button-default mt0 savePlan" type="button" style="background-color:#333" onclick="savePlanParameters()" value="Save Parameters" />
                                 </p>
                             </div>
                         </div>
@@ -145,7 +145,7 @@
                             }
                             <div style="text-align:right;">
                                 <p>
-                                    <input class="cm-button-default mt0 loadProp" type="button" style="background-color:#333 " onclick="savePlanParameters()" value="Save Events" />
+                                    <input class="cm-button-default mt0 savePlan" type="button" style="background-color:#333 " onclick="savePlanParameters()" value="Save Events" />
                                 </p>
                             </div>
                         </div>
@@ -183,16 +183,34 @@
             data: formobject,
             cache: false,
             success: function (result) {
-                debugger;
+                //debugger;
                 successconfirmDialog();
+                 closeLoader();
                 $('#myModal').html(result);
             },
             Error:
                 function (result) {
                     errorconfirmDialog();
+                     closeLoader();
                     $('#myModal').html(result);
                 }
         });
+
+    }
+
+    $(function () {
+        $(".savePlan").on('click', function (e) {
+
+            const loader = document.querySelector(".modal-loader");
+            const successModal = document.querySelector(".modal-success");
+
+            loader.classList.remove("hidden");
+
+        });
+    });
+
+    function closeLoader() {
+        document.querySelector(".modal-loader").classList.add("hidden");
     }
 
 </script>

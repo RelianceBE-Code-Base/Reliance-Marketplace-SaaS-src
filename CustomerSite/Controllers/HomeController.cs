@@ -544,6 +544,7 @@ public class HomeController : BaseController
             {
                 var userDetails = this.userRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
 
+
                 if (subscriptionId != default)
                 {
                     this.logger.Info("GetPartnerSubscription");
@@ -555,6 +556,22 @@ public class HomeController : BaseController
                     {
                         try
                         {
+                            ManageLicense manageLicense = new ManageLicense()
+                            {
+                                UserId = currentUserId.ToString(),
+                                EmailAddress = CurrentUserEmailAddress,
+                                FullName = CurrentUserName,
+                                SubscriptionId = subscriptionId.ToString(),
+                                PlanId = planId.ToString(),
+                                OfferId = subscriptionResultExtension.OfferId.ToString(),
+                                TenantId = subscriptionResultExtension.Purchaser.TenantId.ToString(),
+                                Role = "Admin",
+                                AddedDate = DateTime.Now,
+
+                            };
+
+                            this.manageLicenseRepository.Save(manageLicense);
+
                             this.logger.Info(HttpUtility.HtmlEncode($"Save Subscription Parameters:  {JsonSerializer.Serialize(subscriptionResultExtension.SubscriptionParameters)}" ));
                             if (subscriptionResultExtension.SubscriptionParameters != null && subscriptionResultExtension.SubscriptionParameters.Count() > 0)
                             {
@@ -584,22 +601,6 @@ public class HomeController : BaseController
                                             CreateDate = DateTime.Now,
                                         };
                                         this.subscriptionLogRepository.Save(auditLog);
-
-                                        ManageLicense manageLicense = new ManageLicense()
-                                        {
-                                            UserId = currentUserId.ToString(),
-                                            EmailAddress = CurrentUserEmailAddress,
-                                            FullName = CurrentUserName,
-                                            SubscriptionId = subscriptionId.ToString(),
-                                            PlanId = planId.ToString(),
-                                            OfferId = subscriptionResultExtension.OfferId,
-                                            TenantId = subscriptionResultExtension.Purchaser.TenantId.ToString(),
-                                            Role = "Admin",
-                                            AddedDate = DateTime.Now,
-
-                                        };
-
-                                        this.manageLicenseRepository.Save(manageLicense);
                                     }
                                 }
 
@@ -881,7 +882,7 @@ public class HomeController : BaseController
                 subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
                 subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
 
-                ManagedLicensedUsers = manageLicenseRepository.GetAllLicensedUsers(subscriptionId.ToString()).ToList();
+                ManagedLicensedUsers = manageLicenseRepository.GetAllLicensedUsersBySub(subscriptionId.ToString()).ToList();
             }
 
 

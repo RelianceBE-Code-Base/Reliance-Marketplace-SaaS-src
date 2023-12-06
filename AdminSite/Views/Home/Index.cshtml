@@ -1,12 +1,27 @@
 ﻿@{
     ViewData["Title"] = "Welcome";
 }
+<style>
+    :root{
+        --card-box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+    }
+    .index-card{
+        box-shadow: var(--card-box-shadow);
+        border-radius: 1.7rem;
+        padding: 1.7rem;
+        transition: all 0.4s ease-in-out;
+    }
+
+    .index-card:hover {
+        transform: scale(1.05);
+    }
+</style>
 <div class="pt-5 custom">
-    <div class="page-title text-capitalize"><h1>Home</h1></div>
+@*    <div class="page-title text-capitalize"><h1>Home</h1></div>*@
 
     <div class="card p-3 customcards">
         <div class="text-center">
-            <h4 class="display-4" style="font-size:35px;">Welcome to the SaaS accelerator Admin page</h4>
+            <h4 class="display-4" style="font-size:35px;">Welcome to Reliance Infosystems SaaS Admin page</h4>
         </div>
         <div class="text-left">
             <!--<p>This is the publisher solution.</p>-->
@@ -19,7 +34,7 @@
     </div>
     <div class="pagequicklink text-capitalize"><h3>Quicklinks</h3></div>
     <ul id="homepage-programs">
-        <li id="onedash-menu-homepage1" class="load">
+        <li id="onedash-menu-homepage1" class="load index-card">
             <a class="programCardLink text-capitalize" asp-area="" asp-controller="Home" asp-action="Subscriptions">Subscriptions</a>
             <div class="programCard">
                 <div class="programCardContentWrapper">
@@ -50,7 +65,7 @@
                 </div>
             </div>
         </li>
-        <li id="onedash-menu-homepage2" class="load">
+        <li id="onedash-menu-homepage2" class="load index-card">
             <a class="programCardLink text-capitalize" asp-area="" asp-controller="Plans" asp-action="Index">Plans</a>
             <div class="programCard">
                 <div class="programCardContentWrapper">
@@ -79,7 +94,7 @@
                 </div>
             </div>
         </li>
-        <li id="onedash-menu-homepage3" class="load">
+        <li id="onedash-menu-homepage3" class="load index-card">
             <a class="programCardLink text-capitalize" asp-area="" asp-controller="Offers" asp-action="Index">Offers</a>
             <div class="programCard">
                 <div class="programCardContentWrapper">
@@ -111,7 +126,7 @@
         </li>
         @if (this.TempData["SupportMeteredBilling"]!=null)
         {
-            <li id="onedash-menu-homepage5" class="load">
+            <li id="onedash-menu-homepage5" class="load index-card">
                 <a class="programCardLink text-capitalize" asp-area="" asp-controller="Scheduler" asp-action="Index">Scheduler</a>
             <div class="programCard">
                 <div class="programCardContentWrapper">
@@ -138,7 +153,7 @@
             </div>
         </li>
         }
-        <li id="onedash-menu-homepage4" class="load">
+        <li id="onedash-menu-homepage4" class="load index-card">
             <a class="programCardLink text-capitalize" asp-area="" asp-controller="KnownUsers" asp-action="Index">Test Test Users</a>
             <div class="programCard">
                 <div class="programCardContentWrapper">

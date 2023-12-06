@@ -161,8 +161,8 @@ public class SubscriptionService
             OfferId = subscription.AmpOfferId,
             Term = new TermResult
             {
-                StartDate = subscription.StartDate.GetValueOrDefault(),
-                EndDate = subscription.EndDate.GetValueOrDefault(),
+                StartDate = ConvertToDateTimeOffset(subscription.StartDate.Value),
+                EndDate = ConvertToDateTimeOffset(subscription.EndDate.Value),
             },
             Quantity = subscription.Ampquantity,
             Name = subscription.Name,
@@ -171,6 +171,7 @@ public class SubscriptionService
             CustomerEmailAddress = subscription.User?.EmailAddress,
             CustomerName = subscription.User?.FullName,
             IsMeteringSupported = existingPlanDetail != null ? (existingPlanDetail.IsmeteringSupported ?? false) : false,
+            IsPerUserPlan = (bool)existingPlanDetail.IsPerUser,
         };
 
         if (!Enum.TryParse<TermUnitEnum>(subscription.Term, out var termUnit))
@@ -181,6 +182,26 @@ public class SubscriptionService
         subscritpionDetail.Purchaser.EmailId = subscription.PurchaserEmail;
         subscritpionDetail.Purchaser.TenantId = subscription.PurchaserTenantId ?? default;
         return subscritpionDetail;
+    }
+
+    static DateTimeOffset ConvertToDateTimeOffset(DateTime dateTime)
+    {
+        // Get the time zone information for the local time zone
+        TimeZoneInfo localTimeZone = TimeZoneInfo.Utc;
+
+        var test = TimeZoneInfo.FindSystemTimeZoneById("UTC");
+
+        TimeSpan validOffset = localTimeZone.GetUtcOffset(dateTime);
+
+        // Check if the DateTime is within the valid range of DateTimeOffset
+        if (dateTime < DateTimeOffset.MinValue.DateTime || dateTime > DateTimeOffset.MaxValue.DateTime)
+        {
+            // Handle the case where the DateTime is outside the valid range
+            throw new ArgumentOutOfRangeException(nameof(dateTime), "DateTime is outside the valid range of DateTimeOffset.");
+        }
+
+        // Convert DateTime to DateTimeOffset using the local time zone
+        return new DateTimeOffset(dateTime, validOffset);
     }
 
     /// <summary>

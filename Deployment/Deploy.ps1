@@ -12,7 +12,7 @@
 #$ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
 #dotnet tool install --global dotnet-ef --version 6.0.1; `
 #git clone https://github.com/RelianceBE-Code-Base/Reliance-Marketplace-SaaS-src.git; `
-#cd ./deployments; `
+#cd ./Reliance-Marketplace-SaaS-src/Deployment; `
 #.\Deploy.ps1 `
 # -WebAppNamePrefix "reliancesubscription" `
 # -ResourceGroupForDeployment "RelianceMarketplaceOffer" `
@@ -66,7 +66,7 @@ if ($SQLDatabaseName -eq "") {
 
 if($KeyVault -eq "")
 {
-   $KeyVault=$WebAppNamePrefix+"0 "+"-kv"
+   $KeyVault=$WebAppNamePrefix+"-kv"
 }
 
 $SaaSApiConfiguration_CodeHash= git log --format='%H' -1

@@ -14,38 +14,21 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IBaseRepository{Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.ManageLicense}" />
 public interface IManageLicenseRepository
 {
-    /// <summary>
-    /// Gets all known users.
-    /// </summary>
-    /// <returns>
-    /// All known users.
-    /// </returns>
-    public IEnumerable<ManageLicense> GetAllLicensedUsers(string subscriptionId);
+   
+    public IEnumerable<ManageLicense> GetAllLicensedUsersBySub(string subscriptionId);
+
+    public IEnumerable<ManageLicense> GetAllLicensedUsers();
+
+    public ManageLicense SubscribedUserbyEmail(string email, string offerId);
 
     /// <summary>
-    /// Gets the known user detail.
-    /// </summary>
-    /// <param name="emailAddress">The email address.</param>
-    /// <param name="roleId">The role identifier.</param>
-    /// <returns>
-    /// An instance of KnownUser.
-    /// </returns>
-    //KnownUsers GetKnownUserDetail(string emailAddress, int roleId);
-
-    /// <summary>
-    /// Adds the know users from application configuration.
-    /// </summary>
-    /// <param name="knownUsers">The known users.</param>
-    //void AddKnowUsersFromAppConfig(string knownUsers);
-
-    /// <summary>
-    /// Saves all known users.
+    /// Saves all licensed users.
     /// </summary>
     /// <returns>The number of modified records.</returns>
     public int SaveAllManageLicenses(IEnumerable<ManageLicense> manageLicense, string subscriptionId);
 
     /// <summary>
-    /// Saves all known users.
+    /// remove all licensed users.
     /// </summary>
     /// <returns>The number of modified records.</returns>
     public int RemoveAllManageLicenses(IEnumerable<ManageLicense> manageLicense, string subscriptionId);
