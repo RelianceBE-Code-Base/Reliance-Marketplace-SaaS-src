@@ -98,6 +98,8 @@ public class HomeController : BaseController
 
     private PlanService planService = null;
 
+
+
     /// <summary>
     /// The user service.
     /// </summary>
@@ -359,7 +361,12 @@ public class HomeController : BaseController
             if (this.User.Identity.IsAuthenticated)
             {
                 var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
-                subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
+                var planList = this.subscriptionService.GetAllSubscriptionPlans();
+
+                var offersServiceModels = this.offersRepository.GetAll();
+                var offers = offersServiceModels.Where(x => x.OfferId == subscriptionDetail.OfferId).FirstOrDefault();
+
+                subscriptionDetail.PlanList = planList.Where(x => x.OfferId == offers.OfferGuid.ToString() && x.IsStopSell == false && x.IsPrivate == false).ToList();
 
                 return this.PartialView(subscriptionDetail);
             }
@@ -535,7 +542,7 @@ public class HomeController : BaseController
     /// </returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SubscriptionOperationAsync(SubscriptionResultExtension subscriptionResultExtension, Guid subscriptionId, string planId, string operation)
+    public async Task<IActionResult> SubscriptionOperationAsync(SubscriptionResultExtension subscriptionResultExtension, Guid subscriptionId, string planId, string operation, string offerId)
     {
         this.logger.Info(HttpUtility.HtmlEncode($"Home Controller / SubscriptionOperation subscriptionId:{subscriptionId} :: planId : {planId} :: operation:{operation}"));
         if (this.User.Identity.IsAuthenticated)
@@ -563,7 +570,7 @@ public class HomeController : BaseController
                                 FullName = CurrentUserName,
                                 SubscriptionId = subscriptionId.ToString(),
                                 PlanId = planId.ToString(),
-                                OfferId = subscriptionResultExtension.OfferId.ToString(),
+                                OfferId = offerId.ToString(),
                                 TenantId = subscriptionResultExtension.Purchaser.TenantId.ToString(),
                                 Role = "Admin",
                                 AddedDate = DateTime.Now,

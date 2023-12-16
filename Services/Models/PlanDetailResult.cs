@@ -34,6 +34,10 @@ public class PlanDetailResult : SaaSApiResult
     [DisplayName("planId")]
     public string PlanId { get; set; }
 
+    [JsonPropertyName("offerId")]
+    [DisplayName("offerId")]
+    public string OfferId { get; set; }
+
     /// <summary>
     /// Gets or sets the display name.
     /// </summary>
@@ -63,7 +67,7 @@ public class PlanDetailResult : SaaSApiResult
     /// </value>
     [JsonPropertyName("isPrivate")]
     [DisplayName("isPrivate")]
-    public bool IsPrivate { get; set; }
+    public bool? IsPrivate { get; set; }
 
 
     /// <summary>

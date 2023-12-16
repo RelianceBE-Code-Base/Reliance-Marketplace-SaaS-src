@@ -17,6 +17,9 @@ public partial class Plans
     public string DisplayName { get; set; }
     public bool? IsmeteringSupported { get; set; }
     public bool? IsPerUser { get; set; }
+    public bool? IsPrivate { get; set; }
+    public bool? IsStopSell { get; set; }
+    public bool? HasTrails { get; set; }
     public Guid PlanGuid { get; set; }
     public Guid OfferId { get; set; }
 

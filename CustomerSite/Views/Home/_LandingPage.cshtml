@@ -132,12 +132,12 @@
 
                                             @if (Model.SubscriptionParameters[i].IsRequired == true)
                                             {
-                                                @Html.DropDownList(string.Format("SubscriptionParameters[{0}].Value", @i), selectList, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", name = string.Format("SubscriptionParameters[{0}].Value", @i), @id = string.Format("SubscriptionParameters_{0}__Value", @i) })
+                                                @Html.DropDownList(string.Format("SubscriptionParameters[{0}].Value", @i), selectList, new { @class = @Model.SubscriptionParameters[i].Type + " form-control w-100", @required = "required", name = string.Format("SubscriptionParameters[{0}].Value", @i), @id = string.Format("SubscriptionParameters_{0}__Value", @i) })
 
                                             }
                                             else
                                             {
-                                                @Html.DropDownList(string.Format("SubscriptionParameters[{0}].Value", @i), selectList, new { @class = @Model.SubscriptionParameters[i].Type + " w200", name = string.Format("SubscriptionParameters[{0}].Value", @i), @id = string.Format("SubscriptionParameters_{0}__Value", @i) })
+                                                @Html.DropDownList(string.Format("SubscriptionParameters[{0}].Value", @i), selectList, new { @class = @Model.SubscriptionParameters[i].Type + " form-control w-100", name = string.Format("SubscriptionParameters[{0}].Value", @i), @id = string.Format("SubscriptionParameters_{0}__Value", @i) })
 
                                             }
 
@@ -150,11 +150,11 @@
 
                                             @if (Model.SubscriptionParameters[i].IsRequired == true)
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", @type = @Model.SubscriptionParameters[i].Htmltype })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " form-control w-100", @required = "required", @type = @Model.SubscriptionParameters[i].Htmltype })
                                             }
                                             else
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @type = @Model.SubscriptionParameters[i].Htmltype })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " form-control w-100", @type = @Model.SubscriptionParameters[i].Htmltype })
                                             }
 
                                         </dd>
@@ -165,11 +165,11 @@
 
                                             @if (Model.SubscriptionParameters[i].IsRequired == true)
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", @type = @Model.SubscriptionParameters[i].Htmltype })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " form-control w-100", @required = "required", @type = @Model.SubscriptionParameters[i].Htmltype })
                                             }
                                             else
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @type = @Model.SubscriptionParameters[i].Htmltype })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " form-control w-100", @type = @Model.SubscriptionParameters[i].Htmltype })
                                             }
 
                                         </dd>
@@ -194,16 +194,16 @@
                 <div class="text-right">
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
                     {
-                        <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" class="cm-button-danger text-right load">Unsubscribe</button>
+                        <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" asp-route-offerId="@Model.OfferId" class="cm-button-danger text-right load">Unsubscribe</button>
                         <button type="submit" asp-action="Subscriptions" class="cm-button-default text-right load">Subscription List</button>
                     }
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart && Model.IsAutomaticProvisioningSupported == true)
                     {
-                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-right load">Activate</a>
+                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate','@Model.OfferId')" id="btnActive" class="cm-button-default text-right load">Activate</a>
                     }
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart && Model.IsAutomaticProvisioningSupported == false)
                     {
-                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-right load">Subscribe</a>
+                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate','@Model.OfferId')" id="btnActive" class="cm-button-default text-right load">Subscribe</a>
                     }
                 </div>
             }
@@ -230,11 +230,14 @@ else
                     Welcome to Reliance Infosystem's
                     <span class="bold-text">Offer Landing Page</span>, your central
                     hub for managing all your subscriptions effortlessly.
+
+                   
                 </p>
                 <div class="hero-btn">
                     @if (this.User.Identity.IsAuthenticated)
                     {
                         <a asp-controller="Home" asp-action="Subscriptions" class="load"><i class="fa-solid fa-gear nav-icon"></i>&nbsp;&nbsp;manage subscriptions</a>
+                        
                     }
                     else
                     {
@@ -338,19 +341,21 @@ else
         });
     });
 
-    function SubscriptionOperation(subscriptionId, planId, operation) {
+    function SubscriptionOperation(subscriptionId, planId, operation, offerId) {
         if (validate()) {
             var formobject = $('#frmIndex').serialize();
             $.ajax({
                 url: '/Home/SubscriptionOperation',
                 type: 'POST',
-                data: formobject + "&subscriptionId=" + subscriptionId + "&planId=" + planId + "&operation=" + operation,
+                data: formobject + "&subscriptionId=" + subscriptionId + "&planId=" + planId + "&operation=" + operation + "&offerId=" + offerId,
                 cache: false,
                 success: function (result) {
+                    document.querySelector(".modal-loader").classList.add("hidden");
                     $('#divIndex').html(result);
                 },
                 Error:
                     function (result) {
+                        document.querySelector(".modal-loader").classList.add("hidden");
                         $('#divIndex').html(result);
                     }
             });

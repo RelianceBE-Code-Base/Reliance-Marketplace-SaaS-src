@@ -203,6 +203,12 @@ public class SubscriptionResult : SaaSApiResult
     /// </value>
     public bool ShowWelcomeScreen { get; set; }
 
+    public bool IsFreeTrial { get; set; }
+
+    public bool IsTest { get; set; }
+
+    public bool IsAutoRenew { get;set; }
+
     /// <summary>
     /// Gets or sets the purchaser.
     /// </summary>

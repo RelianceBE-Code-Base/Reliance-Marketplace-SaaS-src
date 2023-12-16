@@ -15,14 +15,14 @@
       "connectionId": "VaultUri",
       "dynamicId": null
     },
-    "mssql2": {
-      "type": "mssql",
-      "connectionId": "connectionstrings:defaultconnection",
-      "dynamicId": null
-    },
     "mssql1": {
       "type": "mssql",
       "connectionId": "KEY",
+      "dynamicId": null
+    },
+    "mssql2": {
+      "type": "mssql",
+      "connectionId": "connectionstrings:defaultconnection",
       "dynamicId": null
     }
   }

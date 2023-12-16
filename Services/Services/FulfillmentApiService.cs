@@ -70,6 +70,35 @@ public class FulfillmentApiService : BaseApiService, IFulfillmentApiService
         }
     }
 
+
+    /// <summary>
+    /// Get all subscriptions asynchronously.
+    /// </summary>
+    /// <returns> List of subscriptions.</returns>
+    //public async Task<List<SubscriptionResult>> GetAllSubscriptionWithOutFormatingAsync()
+    //{
+    //    this.Logger?.Info($"Inside GetAllSubscriptionAsync() of FulfillmentApiService, trying to get All Subscriptions.");
+    //    try
+    //    {
+    //        var subscriptions = await this.marketplaceClient.Fulfillment.ListSubscriptionsAsync().ToListAsync();
+
+    //        var newSubscriptions = subscriptions.subscriptionResultList();
+
+    //        foreach ( var subscription in newSubscriptions )
+    //        {
+    //            subscription.IsAutoRenew = subscription.IsAutoRenew;
+    //            newSubscriptions.Add(subscription);
+    //        }
+
+    //        return newSubscriptions;
+    //    }
+    //    catch (RequestFailedException ex)
+    //    {
+    //        this.ProcessErrorResponse(MarketplaceActionEnum.GET_ALL_SUBSCRIPTIONS, ex);
+    //        return null;
+    //    }
+    //}
+
     /// <summary>
     /// Get all subscriptions synchronously.
     /// </summary>

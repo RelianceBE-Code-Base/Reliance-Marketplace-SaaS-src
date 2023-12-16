@@ -74,7 +74,7 @@ public class ManageLicenseRepository : IManageLicenseRepository
     public int Save(ManageLicense manageLicense)
     {
 
-            var existingUser = this.context.ManageLicense.Where(s => s.EmailAddress == manageLicense.EmailAddress).FirstOrDefault();
+            var existingUser = this.context.ManageLicense.Where(s => s.EmailAddress == manageLicense.EmailAddress && s.OfferId == manageLicense.OfferId && s.PlanId == manageLicense.PlanId).FirstOrDefault();
             if (existingUser == null)
             {
                 this.context.ManageLicense.Add(manageLicense);

@@ -172,6 +172,7 @@ public class SubscriptionService
             CustomerName = subscription.User?.FullName,
             IsMeteringSupported = existingPlanDetail != null ? (existingPlanDetail.IsmeteringSupported ?? false) : false,
             IsPerUserPlan = (bool)existingPlanDetail.IsPerUser,
+
         };
 
         if (!Enum.TryParse<TermUnitEnum>(subscription.Term, out var termUnit))
@@ -283,6 +284,7 @@ public class SubscriptionService
                 MeteredDimensions = planDetail.GetmeteredDimensions(),
                 IsmeteringSupported = planDetail.IsmeteringSupported,
                 IsPerUser = planDetail.IsPerUserPlan,
+                
             });
         }
     }
@@ -304,7 +306,10 @@ public class SubscriptionService
             IsPerUser = planDetail.IsPerUserPlan,
             // Setting to false to avoid NULL in the DB. This only applies
             // when creating a plan for an unsubscribed subscription, so it is fine.
-            IsmeteringSupported = false   
+            IsmeteringSupported = false,
+            IsStopSell = planDetail.IsStopSell,
+            IsPrivate = planDetail.IsPrivate,
+            HasTrails = planDetail.HasFreeTrials
         });
     }
 
@@ -322,7 +327,11 @@ public class SubscriptionService
                 Id = plan.Id,
                 PlanId = plan.PlanId,
                 DisplayName = plan.DisplayName,
-                Description = plan.Description
+                Description = plan.Description,
+                OfferId = plan.OfferId.ToString(),
+                IsPrivate = plan.IsPrivate,
+                IsStopSell = plan.IsStopSell,
+                HasFreeTrials = plan.HasTrails
 
             }).ToList();
     }

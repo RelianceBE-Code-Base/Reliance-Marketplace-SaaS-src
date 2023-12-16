@@ -1,11 +1,17 @@
 ﻿using Asp.Versioning;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+using Marketplace.SaaS.Accelerator.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace RelianceSubscriptionsApi.Controllers;
 
@@ -19,13 +25,14 @@ public class ManageLicence : ControllerBase
     private readonly ISubscriptionsRepository _subscriptionRepository;
     private readonly IPlansRepository _planRepository;
     private readonly IUsersRepository _userRepository;
+    private readonly IFulfillmentApiService fulfillApiService;
 
 
     private SubscriptionService _subscriptionService = null;
     private PlanService _planService = null;
     private UserService _userService;
 
-    public ManageLicence(IJwtUtils jwtUtils, IManageLicenseRepository licenseRepository, ISubscriptionsRepository subscriptionRepository, IPlansRepository planRepository, IUsersRepository userRepository)
+    public ManageLicence(IJwtUtils jwtUtils, IManageLicenseRepository licenseRepository, ISubscriptionsRepository subscriptionRepository, IPlansRepository planRepository, IUsersRepository userRepository, IFulfillmentApiService fulfillApiService)
     {
         _jwtUtils = jwtUtils;
         _planRepository = planRepository;
@@ -35,6 +42,7 @@ public class ManageLicence : ControllerBase
         _userRepository = userRepository;
         _userService = new UserService(_userRepository);
         _subscriptionService = new SubscriptionService(_subscriptionRepository, _planRepository);
+        this.fulfillApiService = fulfillApiService;
 
     }
 
@@ -44,11 +52,21 @@ public class ManageLicence : ControllerBase
         try
         {
             var subscribedusers = _licenseRepository.GetAllLicensedUsers();
-            return Ok(subscribedusers);
+
+            if (subscribedusers == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(subscribedusers);
+            }
         }
         catch (Exception ex)
         {
-            throw;
+            var errorMessage = $"Message: {ex.Message} ({ex.InnerException})";
+
+            return BadRequest(errorMessage);
         }
     }
 
@@ -58,11 +76,22 @@ public class ManageLicence : ControllerBase
         try
         {
             var subscribeduserbyemail = _licenseRepository.SubscribedUserbyEmail(email,offerId);
-            return Ok(subscribeduserbyemail);
+
+            if (subscribeduserbyemail == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(subscribeduserbyemail);
+            }
+           
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            throw;
+            var errorMessage = $"Message: {ex.Message} ({ex.InnerException})";
+
+            return BadRequest(errorMessage);
         }
     }
 
@@ -72,13 +101,21 @@ public class ManageLicence : ControllerBase
         try
         {
             var subscriptionInfo = _subscriptionRepository.GetById(new Guid(subscriptionId));
-            //var subscriptionInfos = _subscriptionService.GetSubscriptionsBySubscriptionId(new Guid(subscriptionId));
 
-            return Ok(subscriptionInfo);
+            if (subscriptionInfo == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(subscriptionInfo);
+            }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            throw;
+            var errorMessage = $"Message: {ex.Message} ({ex.InnerException})";
+
+            return BadRequest(errorMessage);
         }
     }
 
@@ -107,30 +144,48 @@ public class ManageLicence : ControllerBase
         }
         catch(Exception ex)
         {
-            throw new Exception(ex.Message);
+            var errorMessage = $"Message: {ex.Message} ({ex.InnerException})";
+
+            return BadRequest(errorMessage);
         }
     }
 
-    //[HttpGet("getsubscription")]
-    //public IActionResult GetSubscription(string subscriptionId, string planId)
-    //{
-    //    try
-    //    {
+    [HttpGet("subscription")]
+    //[ValidateAntiForgeryToken]
+    public IActionResult GetSubscription(string subscriptionId)
+    {
 
-    //        SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
+        try
+        {
 
-    //        var planDetails = _planRepository.GetById(planId);
+            // Step 1: Get all subscriptions from the API
+            var subscriptions = this.fulfillApiService.GetAllSubscriptionAsync().GetAwaiter().GetResult();
 
-    //        subscriptionDetail = _subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+            var subscription = subscriptions.Where(x => x.Id == new Guid(subscriptionId)).FirstOrDefault();
 
-    //        subscriptionDetail.SubscriptionParameters = _subscriptionService.GetSubscriptionsParametersById(new Guid(subscriptionId), planDetails.PlanGuid);
+            if (subscription == null)
+            {
+                return NotFound();
+            }
+            else
+            {
 
-    //        return Ok(subscriptionDetail);
-    //    }catch (Exception)
-    //    {
-    //        throw new Exception();
-    //    }
-    //}
+                if (subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed)
+                {
+                    subscription.IsActiveSubscription = true;
+                }
+
+                return Ok(subscription);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            var errorMessage = $"Message: {ex.Message} ({ex.InnerException})";
+
+            return BadRequest(errorMessage);
+        }
+    }
 
 
 

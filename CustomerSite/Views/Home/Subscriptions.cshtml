@@ -19,6 +19,9 @@
                         <div class="text-left">
                             <span class="cm-section-heading">Subscriptions</span>
                         </div>
+                        <div class="text-right">
+                    <span class="cm-dropdown-option">Your SaaS subscription will appear in <a href="https://admin.microsoft.com/?auth_upn=@this.User.Claims.ToList().Where(x=>x.Type == "preferred_username").FirstOrDefault().Value&source=applauncher#/licenses" target="_blank">Licenses</a> in the Admin center.</span>
+                        </div>
                         @if (Model.Subscriptions.Count() > 0)
                         {
                             <div class="table-responsive" style="min-height:200px !important">
@@ -69,7 +72,8 @@
                                                                 @if (subscription.IsPerUserPlan)
                                                                 {
                                                                    <a class="dropdown-item cm-dropdown-option loadProp" onclick="ViewSubscriptionQuantityDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Quantity</a>
-                                                                    <a class="dropdown-item cm-dropdown-option load" asp-action="ManageSubscription" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId">Manage License</a>
+                                                                    @*<a class="dropdown-item cm-dropdown-option load" asp-action="ManageSubscription" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId">Manage License</a>*@
+                                                                <a class="dropdown-item cm-dropdown-option" href="https://admin.microsoft.com/?auth_upn=@this.User.Claims.ToList().Where(x=>x.Type == "preferred_username").FirstOrDefault().Value&source=applauncher#/licenses" target="_blank">Manage License</a>
                                                                 }                                                      
                                                                
                                                             }

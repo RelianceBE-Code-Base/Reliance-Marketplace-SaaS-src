@@ -9,10 +9,10 @@
         <div class="cm-panel-default mt40">
             <div class="p-3">
                 <p>
-                    Processing your request. This is might take a while, Once it complates it will reflect on page.
+                    Processing your request. This is might take a while, Once it complates it will reflect on the subscription list.
                 </p>
                 <p>
-                    Updated status of the activity is available in the subscription list.
+                    We will notify the publisher and once your request is acted on you will be notified.
                 </p>
             </div>
         </div>
@@ -22,3 +22,13 @@
     </form>
 </div>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Your code here
+        document.querySelector(".modal-loader").classList.remove("hidden");
+
+        setTimeout(function () {
+            document.querySelector(".modal-loader").classList.add("hidden");
+        }, 100);
+    });
+</script>

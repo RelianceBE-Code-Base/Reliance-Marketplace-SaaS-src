@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Marketplace.SaaS.Accelerator.DataAccess.Migrations;
 using Marketplace.SaaS.Accelerator.Services.Exceptions;
 using Marketplace.SaaS.Accelerator.Services.Models;
 using Microsoft.Marketplace.SaaS.Models;
@@ -28,6 +29,7 @@ static class ConversionHelper
     /// </returns>
     public static SubscriptionResult subscriptionResult(this Subscription subscription)
     {
+
         var subscriptionResult = new SubscriptionResult()
         {
             Id = subscription.Id ?? throw new MarketplaceException("Subscription Id cannot be null"),
@@ -53,7 +55,14 @@ static class ConversionHelper
             {
                 StartDate = subscription.Term.StartDate ?? default(DateTimeOffset),
                 EndDate = subscription.Term.EndDate ?? default(DateTimeOffset),
-            }
+                TermUnit = (Models.TermUnitEnum)subscription.Term.TermUnit,
+            },
+            IsAutoRenew = subscription.AutoRenew.Value,
+            IsTest = subscription.IsTest.Value,
+            IsFreeTrial = subscription.IsFreeTrial.Value,
+            SelectedPlanId = subscription.PlanId,
+            SubscriptionName = subscription.Name
+            
         };
         return subscriptionResult;
     }
@@ -67,7 +76,8 @@ static class ConversionHelper
     /// </returns>
     public static List<SubscriptionResult> subscriptionResultList(this List<Subscription> subscriptions) 
     {
-        return subscriptions.Select(x => x.subscriptionResult()).ToList();
+        var sub = subscriptions.Select(x => x.subscriptionResult()).ToList();
+        return sub;
     }
 
     /// <summary>
