@@ -43,13 +43,13 @@ $User = String-Between -source $ConnectionString -start "User Id=" -end ";"
 $Pass = String-Between -source $ConnectionString -start "Password=" -end ";"
 
 Write-host "## Retrieved ConnectionString from KeyVault"
-Set-Content -Path ../src/AdminSite/appsettings.Development.json -value "{`"ConnectionStrings`": {`"DefaultConnection`":`"$ConnectionString`"}}"
+Set-Content -Path ../AdminSite/appsettings.Development.json -value "{`"ConnectionStrings`": {`"DefaultConnection`":`"$ConnectionString`"}}"
 
 dotnet-ef migrations script `
 	--idempotent `
 	--context SaaSKitContext `
 	--project ../DataAccess/DataAccess.csproj `
-	--startup-project ../src/AdminSite/AdminSite.csproj `
+	--startup-project ../AdminSite/AdminSite.csproj `
 	--output script.sql
 	
 Write-host "## Generated migration script"	
